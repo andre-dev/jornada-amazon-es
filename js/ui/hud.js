@@ -1,3 +1,4 @@
+import { tr } from "../i18n/index.js";
 import { h, limpar } from "./dom.js";
 import { icone } from "./icons.js";
 import { infoNivel, acessorioDeNivel } from "../engine/xp.js";
@@ -6,18 +7,18 @@ import { hojeISO } from "../state/schema.js";
 import { avatarSvg } from "../art/avatar.js";
 import { barra, atualizarBarra, fmt } from "./components.js";
 
-const ROTULOS_SYNC = { ok: ["nuvem", "Sincronizado"], salvando: ["relogio", "Salvando…"], local: ["disco", "Só neste aparelho"] };
+const ROTULOS_SYNC = { ok: ["nuvem", tr("Sincronizado")], salvando: ["relogio", tr("Salvando…")], local: ["disco", tr("Só neste aparelho")] };
 
 export function criarHud(store) {
-  const btnAvatar = h("a", { class: "hud-avatar", href: "#/perfil", "aria-label": "Abrir perfil" });
+  const btnAvatar = h("a", { class: "hud-avatar", href: "#/perfil", "aria-label": tr("Abrir perfil") });
   const nome = h("span", { class: "hud-titulo" });
   const nivelTxt = h("span", { class: "hud-xp" });
-  const xpBarra = barra(0, { cor: "sol", fina: true, rotulo: "XP até o próximo nível" });
+  const xpBarra = barra(0, { cor: "sol", fina: true, rotulo: tr("XP até o próximo nível") });
   const moedasTxt = h("span", null, "0");
   const chamaTxt = h("span", null, "0");
-  const chama = h("span", { class: "hud-stat chama", title: "Dias seguidos estudando" }, icone("chama", 18, { preencher: "currentColor" }), chamaTxt);
-  const moedas = h("span", { class: "hud-stat moedas", title: "Moedas do jogo" }, icone("moeda", 18), moedasTxt);
-  const sync = h("button", { class: "hud-sync local", type: "button", "aria-label": "Estado da sincronização: só neste aparelho", title: "Só neste aparelho" }, icone("disco", 20));
+  const chama = h("span", { class: "hud-stat chama", title: tr("Dias seguidos estudando") }, icone("chama", 18, { preencher: "currentColor" }), chamaTxt);
+  const moedas = h("span", { class: "hud-stat moedas", title: tr("Moedas do jogo") }, icone("moeda", 18), moedasTxt);
+  const sync = h("button", { class: "hud-sync local", type: "button", "aria-label": tr("Estado da sincronização: só neste aparelho"), title: tr("Só neste aparelho") }, icone("disco", 20));
   const el = h("header", { class: "hud", role: "banner" },
     btnAvatar,
     h("div", { class: "hud-nivel" }, h("div", { class: "t" }, nome, nivelTxt), xpBarra),
@@ -29,17 +30,17 @@ export function criarHud(store) {
     const chave = JSON.stringify(s.jogador.avatar) + info.nivel;
     if (chave !== chaveAvatar) {
       chaveAvatar = chave;
-      limpar(btnAvatar).append(avatarSvg(s.jogador.avatar, { nivelAcessorio: acessorioDeNivel(info.nivel), titulo: "Avatar de " + s.jogador.nome }));
+      limpar(btnAvatar).append(avatarSvg(s.jogador.avatar, { nivelAcessorio: acessorioDeNivel(info.nivel), titulo: tr("Avatar de {nome}", { nome: s.jogador.nome }) }));
     }
-    limpar(nome).append(`Nv ${info.nivel}`, h("span", { class: "hud-tit-longo" }, ` · ${info.titulo}`));
+    limpar(nome).append(tr("Nv {n}", { n: info.nivel }), h("span", { class: "hud-tit-longo" }, ` · ${info.titulo}`));
     nivelTxt.textContent = `${fmt(info.xpNoNivel)}/${fmt(info.xpNecessario)}`;
-    nivelTxt.setAttribute("aria-label", `${info.xpNoNivel} de ${info.xpNecessario} XP`);
+    nivelTxt.setAttribute("aria-label", tr("{a} de {b} XP", { a: info.xpNoNivel, b: info.xpNecessario }));
     atualizarBarra(xpBarra, info.progresso);
     moedasTxt.textContent = fmt(s.moedas);
     chamaTxt.textContent = String(s.streak.atual);
     chama.classList.toggle("apagada", !streakViva(s.streak, hojeISO()));
-    chama.setAttribute("aria-label", `${s.streak.atual} dias seguidos`);
-    moedas.setAttribute("aria-label", `${s.moedas} moedas`);
+    chama.setAttribute("aria-label", tr("{n} dias seguidos", { n: s.streak.atual }));
+    moedas.setAttribute("aria-label", tr("{n} moedas", { n: s.moedas }));
   }
   atualizar(store.estado);
   store.assinar((s) => atualizar(s));
@@ -50,7 +51,7 @@ export function criarHud(store) {
     limpar(sync).append(icone(ic, 20));
     const rot = detalhe || txt;
     sync.title = rot;
-    sync.setAttribute("aria-label", "Estado da sincronização: " + rot);
+    sync.setAttribute("aria-label", tr("Estado da sincronização: {s}", { s: rot }));
   }
   sync.addEventListener("click", () => { location.hash = "#/perfil"; });
   return { el, definirSync, atualizar };

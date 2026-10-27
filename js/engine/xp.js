@@ -1,4 +1,5 @@
 // Curva de níveis e títulos. Puro.
+import { tr } from "../i18n/index.js";
 
 /** XP necessário para sair do nível n e ir para o n+1: round(100 * n^1.5). */
 export function xpParaNivel(n) {
@@ -26,15 +27,15 @@ export function infoNivel(xpTotal) {
 }
 
 export const TITULOS = [
-  { de: 1, nome: "Novato Curioso" },
-  { de: 3, nome: "Aprendiz de Vendedor" },
-  { de: 4, nome: "Caçador de Produtos" },
-  { de: 5, nome: "Importador" },
-  { de: 6, nome: "Estrategista de Margens" },
-  { de: 7, nome: "Mestre da Vitrine" },
-  { de: 8, nome: "Rei do Lançamento" },
-  { de: 9, nome: "Operador de Elite" },
-  { de: 10, nome: "Lenda Europeia" },
+  { de: 1, nome: tr("Novato Curioso") },
+  { de: 3, nome: tr("Aprendiz de Vendedor") },
+  { de: 4, nome: tr("Caçador de Produtos") },
+  { de: 5, nome: tr("Importador") },
+  { de: 6, nome: tr("Estrategista de Margens") },
+  { de: 7, nome: tr("Mestre da Vitrine") },
+  { de: 8, nome: tr("Rei do Lançamento") },
+  { de: 9, nome: tr("Operador de Elite") },
+  { de: 10, nome: tr("Lenda Europeia") },
 ];
 
 export function tituloDoNivel(n) {

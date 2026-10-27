@@ -1,4 +1,5 @@
 // Certificado do Chefão: avatar coroado, confete, impressão e download em SVG.
+import { tr, localAtual } from "../i18n/index.js";
 import { h } from "../ui/dom.js";
 import { icone } from "../ui/icons.js";
 import { estadoVazio } from "../ui/components.js";
@@ -13,12 +14,12 @@ import { toast } from "../ui/toast.js";
 
 function dataExtensa(iso) {
   const d = iso ? new Date(iso) : new Date();
-  return (Number.isNaN(d.getTime()) ? new Date() : d).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" });
+  return (Number.isNaN(d.getTime()) ? new Date() : d).toLocaleDateString(localAtual(), { day: "numeric", month: "long", year: "numeric" });
 }
 
 function certificadoSvg(s, nivel, data) {
-  const av = avatarSvgString(s.jogador.avatar, { nivelAcessorio: "coroa", titulo: "Avatar de " + s.jogador.nome }).replace("<svg ", '<svg x="450" y="170" width="300" height="300" ');
-  const linhas = [`${contarLicoesConcluidas(s)} de ${TOTAL_LICOES} lições`, `Nível ${nivel}`, `${contarMissoes(s)} missões da vida real`];
+  const av = avatarSvgString(s.jogador.avatar, { nivelAcessorio: "coroa", titulo: tr("Avatar de {nome}", { nome: s.jogador.nome }) }).replace("<svg ", '<svg x="450" y="170" width="300" height="300" ');
+  const linhas = [tr("{f} de {t} lições", { f: contarLicoesConcluidas(s), t: TOTAL_LICOES }), tr("Nível {n}", { n: nivel }), tr("{n} missões da vida real", { n: contarMissoes(s) })];
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" width="1200" height="850" font-family="Trebuchet MS, Arial, sans-serif">
 <rect width="1200" height="850" fill="#FFF6E5"/><rect x="24" y="24" width="1152" height="802" rx="36" fill="#FFFFFF" stroke="#22223B" stroke-width="8"/>
 <rect x="48" y="48" width="1104" height="754" rx="26" fill="none" stroke="#FFC23C" stroke-width="6" stroke-dasharray="4 14" stroke-linecap="round"/>
@@ -38,29 +39,29 @@ export default function tela({ store }) {
   const s = store.estado;
   const reg = s.chefes.chefao;
   if (!(reg && reg.derrotado)) {
-    return h("div", { class: "pilha" }, estadoVazio("Certificado trancado", "Derrote o Chefão das Vendas no mundo 9 para receber o seu certificado.", h("a", { class: "btn oliva", href: "#/mapa" }, "Voltar ao mapa")));
+    return h("div", { class: "pilha" }, estadoVazio(tr("Certificado trancado"), tr("Derrote o Chefão das Vendas no mundo 9 para receber o seu certificado."), h("a", { class: "btn oliva", href: "#/mapa" }, tr("Voltar ao mapa"))));
   }
   const info = infoNivel(s.xp);
   const data = dataExtensa(reg.derrotadoEm);
   setTimeout(() => confete({ estilo: "padrao", quantidade: 160, reduzir: s.config.reduzirAnimacoes }), 300);
 
-  const cert = h("article", { class: "certificado", "aria-label": "Certificado de conclusão" },
-    h("p", { class: "cert-topo" }, "Jornada Amazon Espanha"),
-    h("h1", null, "Certificado de Conclusão"),
-    h("div", { class: "cert-avatar" }, avatarSvg(s.jogador.avatar, { nivelAcessorio: "coroa", titulo: "Avatar de " + s.jogador.nome })),
-    h("p", { class: "cert-pequeno" }, "Este certificado reconhece que"),
+  const cert = h("article", { class: "certificado", "aria-label": tr("Certificado de conclusão") },
+    h("p", { class: "cert-topo" }, tr("Jornada Amazon Espanha")),
+    h("h1", null, tr("Certificado de Conclusão")),
+    h("div", { class: "cert-avatar" }, avatarSvg(s.jogador.avatar, { nivelAcessorio: "coroa", titulo: tr("Avatar de {nome}", { nome: s.jogador.nome }) })),
+    h("p", { class: "cert-pequeno" }, tr("Este certificado reconhece que")),
     h("p", { class: "cert-nome" }, s.jogador.nome),
-    h("p", null, "derrotou o Chefão das Vendas e concluiu a jornada de vendedor na Amazon Espanha."),
+    h("p", null, tr("derrotou o Chefão das Vendas e concluiu a jornada de vendedor na Amazon Espanha.")),
     h("ul", { class: "cert-stats" },
-      h("li", null, `${contarLicoesConcluidas(s)} de ${TOTAL_LICOES} lições`), h("li", null, `Nível ${info.nivel} · ${info.titulo}`), h("li", null, `${contarMissoes(s)} missões da vida real`)),
+      h("li", null, tr("{f} de {t} lições", { f: contarLicoesConcluidas(s), t: TOTAL_LICOES })), h("li", null, tr("Nível {n} · {titulo}", { n: info.nivel, titulo: info.titulo })), h("li", null, tr("{n} missões da vida real", { n: contarMissoes(s) }))),
     h("p", { class: "cert-pequeno" }, data),
-    h("p", { class: "cert-rodape" }, "Projeto educativo independente, sem vínculo com a Amazon."));
+    h("p", { class: "cert-rodape" }, tr("Projeto educativo independente, sem vínculo com a Amazon.")));
 
   return h("div", { class: "pilha cert-tela" },
     h("div", { class: "linha cert-acoes" },
-      h("a", { class: "btn card", href: "#/perfil" }, icone("voltar", 20), "Perfil"),
+      h("a", { class: "btn card", href: "#/perfil" }, icone("voltar", 20), tr("Perfil")),
       h("span", { class: "espaco" }),
-      h("button", { class: "btn mar", type: "button", onclick: async () => { const r = await baixarArquivo("certificado-jornada-amazon-es.svg", certificadoSvg(s, info.nivel, data), "image/svg+xml"); if (r.ok) toast("Certificado salvo!", "ok"); else if (!r.cancelado) toast("Não consegui salvar o arquivo.", "erro"); } }, icone("download", 20), "Baixar (SVG)"),
-      h("button", { class: "btn sol", type: "button", onclick: () => { try { window.print(); } catch { toast("Seu navegador bloqueou a impressão. Use o botão Baixar.", "erro"); } } }, "Imprimir")),
+      h("button", { class: "btn mar", type: "button", onclick: async () => { const r = await baixarArquivo("certificado-jornada-amazon-es.svg", certificadoSvg(s, info.nivel, data), "image/svg+xml"); if (r.ok) toast(tr("Certificado salvo!"), "ok"); else if (!r.cancelado) toast(tr("Não consegui salvar o arquivo."), "erro"); } }, icone("download", 20), tr("Baixar (SVG)")),
+      h("button", { class: "btn sol", type: "button", onclick: () => { try { window.print(); } catch { toast(tr("Seu navegador bloqueou a impressão. Use o botão Baixar."), "erro"); } } }, tr("Imprimir"))),
     cert);
 }

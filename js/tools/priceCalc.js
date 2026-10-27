@@ -1,4 +1,5 @@
 // Preço mínimo, comparador de planos e simulador de lote. Funções puras.
+import { tr } from "../i18n/index.js";
 import { FEES } from "../content/fees.js";
 import { calcularMargem } from "./feeCalc.js";
 
@@ -18,7 +19,7 @@ function buscarPreco(entrada, ok, tetoCent = 200000) {
     }
     anterior = c;
   }
-  return { valido: false, erro: "Nenhum preço até 2.000 € atinge esse resultado com estes custos." };
+  return { valido: false, erro: tr("Nenhum preço até 2.000 € atinge esse resultado com estes custos.") };
 }
 
 /** Menor preço (com IVA) que atinge a margem desejada sobre a receita sem IVA. */

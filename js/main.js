@@ -1,4 +1,5 @@
 // Boot: carrega save local, monta shell (HUD + navegação), router e eventos de jogo.
+import { tr } from "./i18n/index.js";
 import { h, montar, definirResolverTermo } from "./ui/dom.js";
 import { termoPorChave } from "./content/glossary.js";
 import { icone } from "./ui/icons.js";
@@ -38,11 +39,11 @@ function aplicarConfig(s) {
 
 /* ---------- navegação ---------- */
 const ABAS = [
-  { id: "mapa", rotulo: "Mapa", icone: "mapa", href: "#/mapa" },
-  { id: "oficina", rotulo: "Oficina", icone: "oficina", href: "#/oficina" },
-  { id: "missoes", rotulo: "Missões", icone: "missoes", href: "#/missoes" },
-  { id: "glossario", rotulo: "Glossário", icone: "glossario", href: "#/glossario" },
-  { id: "perfil", rotulo: "Perfil", icone: "perfil", href: "#/perfil" },
+  { id: "mapa", rotulo: tr("Mapa"), icone: "mapa", href: "#/mapa" },
+  { id: "oficina", rotulo: tr("Oficina"), icone: "oficina", href: "#/oficina" },
+  { id: "missoes", rotulo: tr("Missões"), icone: "missoes", href: "#/missoes" },
+  { id: "glossario", rotulo: tr("Glossário"), icone: "glossario", href: "#/glossario" },
+  { id: "perfil", rotulo: tr("Perfil"), icone: "perfil", href: "#/perfil" },
 ];
 
 const ROTAS = [
@@ -68,13 +69,13 @@ let telaAtual = null;
 
 function montarShell() {
   hud = criarHud(store);
-  nav = h("nav", { class: "nav", "aria-label": "Navegação principal" },
-    h("div", { class: "marca", "aria-hidden": "true" }, h("span", { style: { width: "40px", display: "block" } }, personagem("caixote")), h("span", null, "Jornada", h("br"), "Amazon ES")),
+  nav = h("nav", { class: "nav", "aria-label": tr("Navegação principal") },
+    h("div", { class: "marca", "aria-hidden": "true" }, h("span", { style: { width: "40px", display: "block" } }, personagem("caixote")), h("span", null, tr("Jornada"), h("br"), tr("Amazon ES"))),
     ABAS.map((a) => h("a", { href: a.href, dataset: { aba: a.id } }, icone(a.icone, 24), h("span", null, a.rotulo))));
   main = h("main", { id: "conteudo-principal", class: "conteudo", tabindex: "-1" });
   rodape = h("footer", { class: "rodape" },
-    h("p", null, "Projeto educativo independente, sem vínculo com a Amazon. Regras e taxas mudam — confira sempre no Seller Central e com um assessor fiscal."),
-    h("p", null, h("a", { href: "#/fontes" }, "Fontes e datas de verificação")));
+    h("p", null, tr("Projeto educativo independente, sem vínculo com a Amazon. Regras e taxas mudam — confira sempre no Seller Central e com um assessor fiscal.")),
+    h("p", null, h("a", { href: "#/fontes" }, tr("Fontes e datas de verificação"))));
   shell = h("div", { class: "shell" }, nav, h("div", { class: "shell-corpo" }, hud.el, main, rodape));
   montar(app, shell);
 }
@@ -86,7 +87,7 @@ async function aoMudarRota({ rota, params, query, caminho }) {
   if (s.jogador.criado && caminho === "/onboarding") { router.ir("/mapa", { substituir: true }); return; }
   if (telaAtual && telaAtual.__destruir) { try { telaAtual.__destruir(); } catch (e) { console.error(e); } }
   telaAtual = null;
-  if (!rota) { montar(main, h("div", { class: "card" }, h("h1", null, "Página não encontrada"), h("p", null, "Esse caminho não existe."), h("a", { class: "btn", href: "#/mapa" }, "Voltar ao mapa"))); return; }
+  if (!rota) { montar(main, h("div", { class: "card" }, h("h1", null, tr("Página não encontrada")), h("p", null, tr("Esse caminho não existe.")), h("a", { class: "btn", href: "#/mapa" }, tr("Voltar ao mapa")))); return; }
 
   shell.classList.toggle("imersivo", !!rota.imersivo);
   shell.classList.toggle("sem-hud", !!rota.sem_hud);
@@ -112,7 +113,7 @@ async function aoMudarRota({ rota, params, query, caminho }) {
     console.error(e);
     if (meu !== tokenRota) return;
     main.removeAttribute("aria-busy");
-    montar(main, h("div", { class: "card tomate" }, h("h1", null, "Algo não carregou"), h("p", null, "Não consegui abrir esta tela. Tente de novo; se continuar, volte ao mapa."), h("div", { class: "linha" }, h("button", { class: "btn", type: "button", onclick: () => router.ir(caminho) }, "Tentar de novo"), h("a", { class: "btn card", href: "#/mapa" }, "Voltar ao mapa"))));
+    montar(main, h("div", { class: "card tomate" }, h("h1", null, tr("Algo não carregou")), h("p", null, tr("Não consegui abrir esta tela. Tente de novo; se continuar, volte ao mapa.")), h("div", { class: "linha" }, h("button", { class: "btn", type: "button", onclick: () => router.ir(caminho) }, tr("Tentar de novo")), h("a", { class: "btn card", href: "#/mapa" }, tr("Voltar ao mapa")))));
   }
 }
 
@@ -131,12 +132,12 @@ function modalNivel(e) {
   const eq = s.jogador.avatar.equipados.confete;
   confete({ estilo: eq ? eq.replace("confete-", "") : "padrao", reduzir: s.config.reduzirAnimacoes });
   abrirModal({
-    titulo: `Nível ${e.para}!`, classe: "modal-nivel",
+    titulo: tr("Nível {n}!", { n: e.para }), classe: "modal-nivel",
     conteudo: h("div", { class: "centro" },
       h("div", { class: "modal-avatar" }, avatarSvg(s.jogador.avatar, { nivelAcessorio: acessorioDeNivel(info.nivel) })),
       h("p", { style: { fontFamily: "var(--fonte-titulo)", fontSize: "1.3rem", margin: "8px 0 4px" } }, e.titulo),
-      h("p", { class: "muted" }, "Seu personagem evoluiu. Continue assim!")),
-    acoes: [{ texto: "Bora!", classe: "sol", valor: 1 }],
+      h("p", { class: "muted" }, tr("Seu personagem evoluiu. Continue assim!"))),
+    acoes: [{ texto: tr("Bora!"), classe: "sol", valor: 1 }],
   });
 }
 function configurarEventos() {
@@ -146,10 +147,10 @@ function configurarEventos() {
     else if (e.tipo === "nivel") setTimeout(() => modalNivel(e), 700);
     else if (e.tipo === "conquista") {
       const c = conquistaPorId(e.id);
-      if (c) setTimeout(() => { toast(`Conquista: ${c.nome}`, "conquista", { ms: 3200, icon: c.icone }); som.nivel(); }, 900);
+      if (c) setTimeout(() => { toast(tr("Conquista: {nome}", { nome: c.nome }), "conquista", { ms: 3200, icon: c.icone }); som.nivel(); }, 900);
     } else if (e.tipo === "streak") {
-      if (e.evento === "escudo") toast(`Escudo usado! Sequência mantida: ${e.atual} dias`, "ok", { icon: "chama" });
-      else if (e.atual > 1) toast(`${e.atual} dias seguidos!`, "ok", { icon: "chama" });
+      if (e.evento === "escudo") toast(tr("Escudo usado! Sequência mantida: {n} dias", { n: e.atual }), "ok", { icon: "chama" });
+      else if (e.atual > 1) toast(tr("{n} dias seguidos!", { n: e.atual }), "ok", { icon: "chama" });
     }
   });
 }
@@ -164,7 +165,7 @@ function monitorarTempo() {
 }
 
 /* ---------- boot ---------- */
-function telaCarregando(titulo = "Procurando seu progresso…", texto = "O Caixote está buscando na sua conta onde você parou.") {
+function telaCarregando(titulo = tr("Procurando seu progresso…"), texto = tr("O Caixote está buscando na sua conta onde você parou.")) {
   return h("div", { class: "card centro pilha", style: { maxWidth: "420px", margin: "48px auto", padding: "28px" }, role: "status", "aria-live": "polite" },
     h("div", { style: { width: "96px", margin: "0 auto" } }, personagem("caixote")),
     h("h1", { style: { margin: 0, fontSize: "1.4rem" } }, titulo),
@@ -181,7 +182,7 @@ async function boot() {
   let fb = null, usuario = null, convidado = false;
   if (FIREBASE_CONFIG) {
     shell.classList.add("sem-hud", "imersivo");
-    montar(main, telaCarregando("Abrindo o jogo…", "Só um instante."));
+    montar(main, telaCarregando(tr("Abrindo o jogo…"), tr("Só um instante.")));
     try {
       const { iniciarFirebase } = await import("./nuvem/firebase.js");
       fb = await iniciarFirebase(FIREBASE_CONFIG);
@@ -246,7 +247,7 @@ async function boot() {
 
 function falhaBoot(e) {
   console.error(e);
-  montar(app, h("div", { style: { padding: "24px", fontFamily: "system-ui", maxWidth: "520px", margin: "0 auto" } }, h("h1", null, "Ops, o jogo não abriu"), h("p", null, "Recarregue a página. Se o problema continuar, seu progresso continua salvo neste aparelho e no Backup do Perfil.")));
+  montar(app, h("div", { style: { padding: "24px", fontFamily: "system-ui", maxWidth: "520px", margin: "0 auto" } }, h("h1", null, tr("Ops, o jogo não abriu")), h("p", null, tr("Recarregue a página. Se o problema continuar, seu progresso continua salvo neste aparelho e no Backup do Perfil."))));
 }
 iniciarPWA();
 boot().catch(falhaBoot);

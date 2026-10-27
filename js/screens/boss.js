@@ -1,3 +1,4 @@
+import { tr } from "../i18n/index.js";
 import { h, limpar } from "../ui/dom.js";
 import { icone } from "../ui/icons.js";
 import { botao, estadoVazio, barra, atualizarBarra } from "../ui/components.js";
@@ -11,23 +12,23 @@ import { som } from "../ui/sons.js";
 import { abrirTermo } from "../ui/termo.js";
 
 function coracoes(vidas, max) {
-  const el = h("div", { class: "coracoes", role: "img", "aria-label": `${vidas} de ${max} corações` });
+  const el = h("div", { class: "coracoes", role: "img", "aria-label": tr("{v} de {m} corações", { v: vidas, m: max }) });
   for (let i = 0; i < max; i++) el.append(h("span", { class: "coracao " + (i < vidas ? "cheio" : "vazio") }, icone("coracao", 28, { preencher: i < vidas ? "currentColor" : "none", traco: 2.6 })));
   return el;
 }
 
 export default async function chefe({ store, ir, params }) {
   const ref = chefePorId(params.id);
-  if (!ref) return estadoVazio("Chefe não encontrado", "Esse chefe não existe.", h("a", { class: "btn", href: "#/mapa" }, "Voltar ao mapa"));
+  if (!ref) return estadoVazio(tr("Chefe não encontrado"), tr("Esse chefe não existe."), h("a", { class: "btn", href: "#/mapa" }, tr("Voltar ao mapa")));
   const { mundo, chefe: cm } = ref;
   const s0 = store.estado;
   if (!chefeLiberado(s0, mundo)) {
-    return estadoVazio("A porta do chefe está fechada", "Conclua todas as lições do mundo para enfrentar este chefe.", h("a", { class: "btn", href: `#/mundo/${mundo.id}` }, "Voltar ao mundo"));
+    return estadoVazio(tr("A porta do chefe está fechada"), tr("Conclua todas as lições do mundo para enfrentar este chefe."), h("a", { class: "btn", href: `#/mundo/${mundo.id}` }, tr("Voltar ao mundo")));
   }
   let conteudo;
   try { conteudo = await carregarMundo(mundo.id); } catch { conteudo = null; }
   const C = conteudo && conteudo.chefe;
-  if (!C || !(C.perguntas || C.fases)) return estadoVazio("Chefe em construção", "As perguntas deste chefe ainda não estão disponíveis.", h("a", { class: "btn", href: `#/mundo/${mundo.id}` }, "Voltar ao mundo"));
+  if (!C || !(C.perguntas || C.fases)) return estadoVazio(tr("Chefe em construção"), tr("As perguntas deste chefe ainda não estão disponíveis."), h("a", { class: "btn", href: `#/mundo/${mundo.id}` }, tr("Voltar ao mundo")));
 
   const final = !!cm.final;
   const raiz = h("div", { class: "arena" });
@@ -47,13 +48,13 @@ export default async function chefe({ store, ir, params }) {
       h("h1", null, cm.nome),
       C.fala ? h("p", { class: "arena-fala" }, `“${C.fala}”`) : null,
       h("ul", { class: "arena-regras" },
-        h("li", null, icone("coracao", 20, { preencher: "currentColor" }), final ? " 5 corações (você recupera 1 a cada fase)" : " 3 corações: cada erro custa um"),
-        h("li", null, icone("espada", 20), ` ${nPerg} perguntas${C.fases ? ` em ${C.fases.length} fases` : ""}: cada acerto causa dano`),
-        h("li", null, icone("estrela", 20), " 3 acertos seguidos = golpe crítico (dano em dobro)")),
-      reg && reg.tentativas ? h("p", { class: "pequeno muted" }, `Tentativas até agora: ${reg.tentativas}`) : null,
+        h("li", null, icone("coracao", 20, { preencher: "currentColor" }), final ? tr(" 5 corações (você recupera 1 a cada fase)") : tr(" 3 corações: cada erro custa um")),
+        h("li", null, icone("espada", 20), " " + (C.fases ? tr("{n} perguntas em {f} fases: cada acerto causa dano", { n: nPerg, f: C.fases.length }) : tr("{n} perguntas: cada acerto causa dano", { n: nPerg }))),
+        h("li", null, icone("estrela", 20), tr(" 3 acertos seguidos = golpe crítico (dano em dobro)"))),
+      reg && reg.tentativas ? h("p", { class: "pequeno muted" }, tr("Tentativas até agora: {n}", { n: reg.tentativas })) : null,
       h("div", { class: "pilha" },
-        botao(final ? "Enfrentar o Chefão!" : "Lutar!", { classe: "tomate grande bloco", icon: "espada", onclick: iniciar }),
-        botao("Voltar ao mundo", { classe: "card bloco", onclick: () => ir(`/mundo/${mundo.id}`) }))));
+        botao(final ? tr("Enfrentar o Chefão!") : tr("Lutar!"), { classe: "tomate grande bloco", icon: "espada", onclick: iniciar }),
+        botao(tr("Voltar ao mundo"), { classe: "card bloco", onclick: () => ir(`/mundo/${mundo.id}`) }))));
   }
 
   /* ------------ batalha ------------ */
@@ -62,7 +63,7 @@ export default async function chefe({ store, ir, params }) {
     store.iniciarChefe(cm.id);
     batalha = criarBatalha(C.fases ? { fases: C.fases.map((f) => ({ nome: f.nome, perguntas: f.perguntas.map((q) => ({ ...q, licaoRef: q.licaoRef || "" })) })), hp: C.hp || 100, vidas: C.vidas || 5, curaPorFase: 1 }
       : { perguntas: C.perguntas, hp: C.hp || 100, vidas: C.vidas || 3 });
-    const hpBarra = barra(1, { cor: "tomate", rotulo: "Vida do chefe" });
+    const hpBarra = barra(1, { cor: "tomate", rotulo: tr("Vida do chefe") });
     const hpTxt = h("span", { class: "hp-txt" }, "");
     const bossArte = h("div", { class: "boss-arte", "aria-hidden": "true" }, personagem(cm.id));
     const flutuadores = h("div", { class: "flutuadores", "aria-hidden": "true" });
@@ -71,11 +72,11 @@ export default async function chefe({ store, ir, params }) {
     const faseEl = h("div", { class: "fase-tag" });
     const palco = h("div", { class: "arena-palco" });
     ui = { hpBarra, hpTxt, bossArte, flutuadores, combo, vidasEl, faseEl, palco };
-    const sair = h("button", { class: "btn card btn-icone", type: "button", "aria-label": "Fugir da batalha", onclick: () => ir(`/mundo/${mundo.id}`) }, icone("x", 22));
+    const sair = h("button", { class: "btn card btn-icone", type: "button", "aria-label": tr("Fugir da batalha"), onclick: () => ir(`/mundo/${mundo.id}`) }, icone("x", 22));
     limpar(raiz).append(
       h("header", { class: "arena-topo" }, sair, h("div", { class: "arena-nome" }, h("strong", null, cm.nome), faseEl), vidasEl),
       h("div", { class: "arena-boss" }, h("div", { class: "arena-cena", "aria-hidden": "true" }, cenario(mundo.cenario)), bossArte, flutuadores),
-      h("div", { class: "hp-linha" }, h("span", { class: "hp-rotulo" }, icone("coracao", 18, { preencher: "currentColor" }), " Chefe"), hpBarra, hpTxt),
+      h("div", { class: "hp-linha" }, h("span", { class: "hp-rotulo" }, icone("coracao", 18, { preencher: "currentColor" }), " " + tr("Chefe")), hpBarra, hpTxt),
       combo, palco);
     atualizarPainel();
     proximaPergunta();
@@ -85,8 +86,8 @@ export default async function chefe({ store, ir, params }) {
     atualizarBarra(ui.hpBarra, fr);
     ui.hpTxt.textContent = `${batalha.hp}/${batalha.hpMax}`;
     limpar(ui.vidasEl).append(coracoes(batalha.vidas, batalha.vidasMax));
-    ui.faseEl.textContent = batalha.totalFases > 1 ? `Fase ${batalha.fase + 1}/${batalha.totalFases}: ${batalha.nomeFase}` : `Pergunta ${batalha.numeroPergunta}/${batalha.totalNaFase}`;
-    ui.combo.textContent = batalha.combo > 0 ? `Combo ${batalha.combo}/3${batalha.combo === 2 ? " — o próximo acerto é crítico!" : ""}` : "";
+    ui.faseEl.textContent = batalha.totalFases > 1 ? tr("Fase {f}/{t}: {nome}", { f: batalha.fase + 1, t: batalha.totalFases, nome: batalha.nomeFase }) : tr("Pergunta {n}/{t}", { n: batalha.numeroPergunta, t: batalha.totalNaFase });
+    ui.combo.textContent = batalha.combo > 0 ? (batalha.combo === 2 ? tr("Combo {n}/3 — o próximo acerto é crítico!", { n: batalha.combo }) : tr("Combo {n}/3", { n: batalha.combo })) : "";
     ui.combo.classList.toggle("quente", batalha.combo === 2);
   }
   function flutuar(texto, classe) {
@@ -110,15 +111,15 @@ export default async function chefe({ store, ir, params }) {
         store.registrarResposta(res.correto);
         if (res.correto) {
           animar(res.critico ? "critico" : "golpe");
-          flutuar(res.critico ? `CRÍTICO! -${res.danoCausado}` : `-${res.danoCausado}`, res.critico ? "critico" : "dano");
+          flutuar(res.critico ? tr("CRÍTICO! -{n}", { n: res.danoCausado }) : `-${res.danoCausado}`, res.critico ? "critico" : "dano");
           som.golpe(); som.acerto();
         } else {
-          animar("riso"); flutuar("-1 coração", "perda"); som.erro();
+          animar("riso"); flutuar(tr("-1 coração"), "perda"); som.erro();
         }
         atualizarPainel();
       },
       aoContinuar: avancar,
-      rotuloContinuar: "Continuar",
+      rotuloContinuar: tr("Continuar"),
       onTermo: abrirTermo,
     });
     view.classList.add("entra");
@@ -138,9 +139,9 @@ export default async function chefe({ store, ir, params }) {
     limparView();
     atualizarPainel();
     limpar(ui.palco).append(h("section", { class: "card sol entra centro pilha" },
-      h("h2", null, `Fase ${batalha.fase + 1}: ${batalha.nomeFase}`),
-      h("p", null, `O Chefão se transforma! Barra de vida cheia de novo, mas você recuperou um coração.`),
-      botao("Seguir em frente", { classe: "tomate grande", icon: "espada", onclick: proximaPergunta })));
+      h("h2", null, tr("Fase {f}: {nome}", { f: batalha.fase + 1, nome: batalha.nomeFase })),
+      h("p", null, tr("O Chefão se transforma! Barra de vida cheia de novo, mas você recuperou um coração.")),
+      botao(tr("Seguir em frente"), { classe: "tomate grande", icon: "espada", onclick: proximaPergunta })));
   }
 
   /* ------------ fim ------------ */
@@ -153,15 +154,15 @@ export default async function chefe({ store, ir, params }) {
     const prox = MUNDOS[mundo.id];
     limpar(raiz).append(h("section", { class: "card oliva centro pilha vitoria entra" },
       h("div", { class: "arena-intro-boss derrotado", "aria-hidden": "true" }, personagem(cm.id)),
-      h("h1", null, final ? "VOCÊ VENCEU O CHEFÃO!" : `${cm.nome} foi derrotado!`),
+      h("h1", null, final ? tr("VOCÊ VENCEU O CHEFÃO!") : tr("{nome} foi derrotado!", { nome: cm.nome })),
       C.derrota ? h("p", { class: "arena-fala" }, `“${C.derrota}”`) : null,
-      h("p", null, `${batalha.acertos} acertos, melhor combo ${batalha.melhorCombo}, ${batalha.vidas} coração(ões) sobrando.`),
-      h("div", { class: "resultado-ganhos" }, rec.xp ? h("span", { class: "badge sol grande" }, `+${rec.xp} XP`) : null, rec.moedas ? h("span", { class: "badge grande" }, icone("moeda", 16), `+${rec.moedas} moedas`) : null),
-      !rec.primeira ? h("p", { class: "pequeno muted" }, "Vitória de treino: o XP do chefe só vale na primeira vez.") : null,
+      h("p", null, tr("{a} acertos, melhor combo {c}, {v} coração(ões) sobrando.", { a: batalha.acertos, c: batalha.melhorCombo, v: batalha.vidas })),
+      h("div", { class: "resultado-ganhos" }, rec.xp ? h("span", { class: "badge sol grande" }, `+${rec.xp} XP`) : null, rec.moedas ? h("span", { class: "badge grande" }, icone("moeda", 16), tr("+{n} moedas", { n: rec.moedas })) : null),
+      !rec.primeira ? h("p", { class: "pequeno muted" }, tr("Vitória de treino: o XP do chefe só vale na primeira vez.")) : null,
       h("div", { class: "pilha" },
-        final ? botao("Ver meu certificado", { classe: "sol grande bloco", icon: "trofeu", onclick: () => ir("/certificado") })
-          : (prox ? botao(`Abrir o mundo ${prox.id}: ${prox.titulo}`, { classe: "oliva grande bloco", icon: "seta", onclick: () => ir(`/mundo/${prox.id}`) }) : null),
-        botao("Voltar ao mapa", { classe: "card bloco", onclick: () => ir("/mapa") }))));
+        final ? botao(tr("Ver meu certificado"), { classe: "sol grande bloco", icon: "trofeu", onclick: () => ir("/certificado") })
+          : (prox ? botao(tr("Abrir o mundo {n}: {titulo}", { n: prox.id, titulo: prox.titulo }), { classe: "oliva grande bloco", icon: "seta", onclick: () => ir(`/mundo/${prox.id}`) }) : null),
+        botao(tr("Voltar ao mapa"), { classe: "card bloco", onclick: () => ir("/mapa") }))));
     window.scrollTo(0, 0);
   }
   function derrota() {
@@ -170,12 +171,12 @@ export default async function chefe({ store, ir, params }) {
     const revisar = batalha.licoesParaRevisar().map((id) => licaoMeta(id)).filter(Boolean);
     limpar(raiz).append(h("section", { class: "card tomate pilha derrota entra" },
       h("div", { class: "arena-intro-boss", "aria-hidden": "true" }, personagem(cm.id)),
-      h("h1", null, "O chefe recuou para a toca"),
-      h("p", null, "Você caiu desta vez, mas nada se perde: tudo o que você aprendeu continua valendo. Revise estes pontos e volte mais forte."),
-      revisar.length ? h("ul", { class: "revisar" }, revisar.map((m) => h("li", null, h("a", { class: "btn card pequeno bloco", href: `#/licao/${m.licao.id}` }, icone("glossario", 18), `Revisar: ${m.licao.titulo}`)))) : h("p", { class: "muted" }, "Releia as explicações das perguntas e tente de novo."),
+      h("h1", null, tr("O chefe recuou para a toca")),
+      h("p", null, tr("Você caiu desta vez, mas nada se perde: tudo o que você aprendeu continua valendo. Revise estes pontos e volte mais forte.")),
+      revisar.length ? h("ul", { class: "revisar" }, revisar.map((m) => h("li", null, h("a", { class: "btn card pequeno bloco", href: `#/licao/${m.licao.id}` }, icone("glossario", 18), `Revisar: ${m.licao.titulo}`)))) : h("p", { class: "muted" }, tr("Releia as explicações das perguntas e tente de novo.")),
       h("div", { class: "pilha" },
-        botao("Tentar de novo", { classe: "tomate grande bloco", icon: "espada", onclick: intro }),
-        botao("Voltar ao mundo", { classe: "card bloco", onclick: () => ir(`/mundo/${mundo.id}`) }))));
+        botao(tr("Tentar de novo"), { classe: "tomate grande bloco", icon: "espada", onclick: intro }),
+        botao(tr("Voltar ao mundo"), { classe: "card bloco", onclick: () => ir(`/mundo/${mundo.id}`) }))));
     window.scrollTo(0, 0);
   }
 

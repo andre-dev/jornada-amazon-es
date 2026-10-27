@@ -1,3 +1,4 @@
+import { tr } from "../i18n/index.js";
 import { h } from "../ui/dom.js";
 import { bannerConta } from "../ui/conta.js";
 import { icone } from "../ui/icons.js";
@@ -11,13 +12,13 @@ import { contarLicoesConcluidas } from "../engine/rewards.js";
 import { toast } from "../ui/toast.js";
 
 const DICAS = [
-  "Antes de se apaixonar por um produto, faça a conta de ponta a ponta. Quem calcula primeiro dorme melhor.",
-  "Dono de empresa não precisa operar: precisa entender o suficiente para escolher bem quem opera.",
-  "Cada lição é curta de propósito. Uma por dia vale mais do que cinco no sábado.",
-  "Regras e taxas mudam. As lições mostram a data em que cada informação foi conferida.",
-  "Na dúvida sobre imposto, pergunte a uma gestoría. Barato perto do custo de um erro.",
-  "Termos sublinhados são clicáveis: eles abrem o glossário sem tirar você da lição.",
-  "Amostra primeiro, pedido grande depois. Sempre.",
+  tr("Antes de se apaixonar por um produto, faça a conta de ponta a ponta. Quem calcula primeiro dorme melhor."),
+  tr("Dono de empresa não precisa operar: precisa entender o suficiente para escolher bem quem opera."),
+  tr("Cada lição é curta de propósito. Uma por dia vale mais do que cinco no sábado."),
+  tr("Regras e taxas mudam. As lições mostram a data em que cada informação foi conferida."),
+  tr("Na dúvida sobre imposto, pergunte a uma gestoría. Barato perto do custo de um erro."),
+  tr("Termos sublinhados são clicáveis: eles abrem o glossário sem tirar você da lição."),
+  tr("Amostra primeiro, pedido grande depois. Sempre."),
 ];
 
 export default function mapa({ store, ir, persist }) {
@@ -27,18 +28,18 @@ export default function mapa({ store, ir, persist }) {
   const feitas = contarLicoesConcluidas(s);
   const dica = DICAS[(new Date().getDate() + feitas) % DICAS.length];
 
-  const rotuloContinuar = passo.tipo === "licao" ? (passo.retomar ? "Continuar a lição" : feitas === 0 ? "Começar a primeira lição" : "Próxima lição")
-    : passo.tipo === "chefe" ? "Enfrentar o chefe" : "Ver meu certificado";
+  const rotuloContinuar = passo.tipo === "licao" ? (passo.retomar ? tr("Continuar a lição") : feitas === 0 ? tr("Começar a primeira lição") : tr("Próxima lição"))
+    : passo.tipo === "chefe" ? tr("Enfrentar o chefe") : tr("Ver meu certificado");
   const destino = passo.tipo === "licao" ? `/licao/${passo.id}` : passo.tipo === "chefe" ? `/chefe/${passo.id}` : "/certificado";
 
   const hero = h("section", { class: "mapa-hero card sol" },
     h("div", { class: "hero-texto" },
-      h("h1", null, `Olá, ${s.jogador.nome}!`),
-      h("p", { class: "hero-sub" }, passo.tipo === "fim" ? "Você chegou à Coroa da Europa. Que jornada!" : `${feitas} de ${TOTAL_LICOES} lições feitas. Próximo passo: ${passo.titulo}.`),
+      h("h1", null, tr("Olá, {nome}!", { nome: s.jogador.nome })),
+      h("p", { class: "hero-sub" }, passo.tipo === "fim" ? tr("Você chegou à Coroa da Europa. Que jornada!") : tr("{f} de {t} lições feitas. Próximo passo: {passo}.", { f: feitas, t: TOTAL_LICOES, passo: passo.titulo })),
       h("div", { class: "linha" },
         botao(rotuloContinuar, { classe: "oliva grande", icon: "seta", onclick: () => ir(destino) }),
-        h("span", { class: "badge" }, `Nível ${info.nivel}`),
-        h("a", { class: "badge rk-atalho", href: "#/ranking" }, "🏆 Ranking"))),
+        h("span", { class: "badge" }, tr("Nível {n}", { n: info.nivel })),
+        h("a", { class: "badge rk-atalho", href: "#/ranking" }, tr("🏆 Ranking")))),
     h("div", { class: "hero-caixote", "aria-hidden": "true" }, personagem("caixote")));
 
   const trilha = h("div", { class: "trilha" });
@@ -49,7 +50,7 @@ export default function mapa({ store, ir, persist }) {
 
   const inicio = h("div", { class: "no-inicio", "data-no": "0" },
     h("span", { class: "no-inicio-ic" }, icone("casa", 22)),
-    h("div", null, h("strong", null, "Partida"), h("div", { class: "pequeno" }, "Brasil → Espanha → Europa")));
+    h("div", null, h("strong", null, tr("Partida")), h("div", { class: "pequeno" }, tr("Brasil → Espanha → Europa"))));
   trilha.append(inicio);
 
   const atual = passo.mundo.id;
@@ -63,17 +64,17 @@ export default function mapa({ store, ir, persist }) {
       h("div", { class: "no-cena", "aria-hidden": "true" }, cenario(m.cenario)),
       h("span", { class: "no-num" }, String(m.id)),
       estado === "bloqueado" ? h("span", { class: "no-cadeado" }, icone("cadeado", 28)) : null,
-      p.derrotado ? h("span", { class: "no-selo", title: "Chefe derrotado" }, icone("estrela", 22, { preencher: "currentColor" })) : null,
+      p.derrotado ? h("span", { class: "no-selo", title: tr("Chefe derrotado") }, icone("estrela", 22, { preencher: "currentColor" })) : null,
       h("div", { class: "no-info" },
         h("h2", null, m.titulo),
         h("p", { class: "pequeno" }, m.subtitulo),
-        h("div", { class: "no-prog" }, barra(p.fracao, { cor: estado === "concluido" ? "oliva" : "mar", fina: true, rotulo: `Progresso do mundo ${m.id}` }), h("span", { class: "pequeno" }, `${p.feitas}/${p.total} lições${p.derrotado ? " + chefe" : ""}`))),
+        h("div", { class: "no-prog" }, barra(p.fracao, { cor: estado === "concluido" ? "oliva" : "mar", fina: true, rotulo: tr("Progresso do mundo {n}", { n: m.id }) }), h("span", { class: "pequeno" }, (p.derrotado ? tr("{f}/{t} lições + chefe", { f: p.feitas, t: p.total }) : tr("{f}/{t} lições", { f: p.feitas, t: p.total }))))),
       estado === "atual" ? h("div", { class: "no-marcador", "aria-hidden": "true" }, avatarSvg(s.jogador.avatar, { nivelAcessorio: acessorioDeNivel(info.nivel) })) : null,
     ];
-    const rotulo = `Mundo ${m.id}: ${m.titulo}. ${estado === "bloqueado" ? "Bloqueado." : estado === "concluido" ? "Concluído." : `${p.feitas} de ${p.total} lições feitas.`}`;
+    const rotulo = tr("Mundo {n}: {titulo}.", { n: m.id, titulo: m.titulo }) + " " + (estado === "bloqueado" ? tr("Bloqueado.") : estado === "concluido" ? tr("Concluído.") : tr("{f} de {t} lições feitas.", { f: p.feitas, t: p.total }));
     let no;
     if (estado === "bloqueado") {
-      no = h("button", { class: `no ${estado}`, type: "button", "data-no": String(m.id), "aria-label": rotulo, onclick: () => toast(`Derrote ${MUNDOS[m.id - 2].chefe.nome} para abrir este mundo.`, "", { icon: "cadeado" }) }, conteudo);
+      no = h("button", { class: `no ${estado}`, type: "button", "data-no": String(m.id), "aria-label": rotulo, onclick: () => toast(tr("Derrote {chefe} para abrir este mundo.", { chefe: MUNDOS[m.id - 2].chefe.nome }), "", { icon: "cadeado" }) }, conteudo);
     } else {
       no = h("a", { class: `no ${estado}`, href: `#/mundo/${m.id}`, "data-no": String(m.id), "aria-label": rotulo, style: { "--cor-mundo": `var(--${m.cor})` } }, conteudo);
     }

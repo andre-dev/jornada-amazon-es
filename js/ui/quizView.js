@@ -1,9 +1,10 @@
 // Interface de uma pergunta (múltipla, V/F, lacuna, produto, ordenar). Usada por lições e chefes.
+import { tr } from "../i18n/index.js";
 import { h, md, inlineMd, limpar } from "./dom.js";
 import { icone } from "./icons.js";
 
-const CERTO = ["Isso aí!", "Mandou bem!", "Exato!", "Na mosca!", "Certo!"];
-const ERRADO = ["Quase!", "Não foi dessa vez.", "Boa tentativa.", "Ainda não."];
+const CERTO = [tr("Isso aí!"), tr("Mandou bem!"), tr("Exato!"), tr("Na mosca!"), tr("Certo!")];
+const ERRADO = [tr("Quase!"), tr("Não foi dessa vez."), tr("Boa tentativa."), tr("Ainda não.")];
 const LETRAS = ["A", "B", "C", "D", "E", "F"];
 let rot = 0;
 
@@ -18,7 +19,7 @@ let rot = 0;
  */
 export function perguntaView(visao, opts) {
   const { q, ordem } = visao;
-  const raiz = h("section", { class: "pergunta", "aria-label": "Pergunta" });
+  const raiz = h("section", { class: "pergunta", "aria-label": tr("Pergunta") });
   const feedback = h("div", { class: "feedback", "aria-live": "polite", role: "status" });
   const cabeca = h("div", { class: "pergunta-cabeca" },
     opts.selo ? h("span", { class: "badge tomate" }, opts.selo) : null,
@@ -34,10 +35,10 @@ export function perguntaView(visao, opts) {
     const titulo = ok ? CERTO[rot++ % CERTO.length] : ERRADO[rot++ % ERRADO.length];
     const partes = [
       h("div", { class: "feedback-titulo" }, icone(ok ? "check" : "x", 24, { traco: 3.2 }), h("strong", null, titulo)),
-      !ok ? h("p", { class: "feedback-correta" }, h("strong", null, "Resposta certa: "), res.textoCorreto) : null,
+      !ok ? h("p", { class: "feedback-correta" }, h("strong", null, tr("Resposta certa: ")), res.textoCorreto) : null,
       res.explicacao ? md(res.explicacao, { onTermo: opts.onTermo }) : null,
       res.extra || null,
-      h("button", { class: "btn grande bloco " + (ok ? "oliva" : "sol"), type: "button", onclick: () => opts.aoContinuar && opts.aoContinuar() }, opts.rotuloContinuar || "Continuar", icone("seta", 20))];
+      h("button", { class: "btn grande bloco " + (ok ? "oliva" : "sol"), type: "button", onclick: () => opts.aoContinuar && opts.aoContinuar() }, opts.rotuloContinuar || tr("Continuar"), icone("seta", 20))];
     feedback.append(...partes.filter(Boolean));
     const btn = feedback.querySelector("button.btn");
     setTimeout(() => { try { btn.focus({ preventScroll: false }); btn.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch { /* ignora */ } }, 60);
@@ -56,8 +57,8 @@ export function perguntaView(visao, opts) {
 
   if (q.tipo === "ordenar") {
     let seq = ordem.map((_, i) => i); // posições exibidas, na ordem atual do jogador
-    const lista = h("ol", { class: "ordenar", "aria-label": "Itens para ordenar" });
-    const confirmar = h("button", { class: "btn oliva bloco", type: "button" }, "Confirmar ordem");
+    const lista = h("ol", { class: "ordenar", "aria-label": tr("Itens para ordenar") });
+    const confirmar = h("button", { class: "btn oliva bloco", type: "button" }, tr("Confirmar ordem"));
     let arrastando = null;
     const rotulo = (pos) => q.opcoes[ordem[pos]];
     function desenhar(res) {
@@ -89,15 +90,15 @@ export function perguntaView(visao, opts) {
     }
     confirmar.addEventListener("click", () => finalizar(seq.slice(), (res) => { res.ordemCerta = q.correta.slice(); confirmar.hidden = true; desenhar(res); }));
     desenhar();
-    raiz.append(h("p", { class: "pequeno muted" }, "Arraste os itens (no computador) ou use as setas para colocar na ordem certa."), lista, confirmar);
+    raiz.append(h("p", { class: "pequeno muted" }, tr("Arraste os itens (no computador) ou use as setas para colocar na ordem certa.")), lista, confirmar);
   } else if (q.tipo === "vf") {
-    const bV = h("button", { class: "btn grande oliva vf", type: "button", onclick: () => finalizar(0, (res) => marcarUnico(0, res)) }, icone("check", 24, { traco: 3 }), "Verdadeiro");
-    const bF = h("button", { class: "btn grande tomate vf", type: "button", onclick: () => finalizar(1, (res) => marcarUnico(1, res)) }, icone("x", 24, { traco: 3 }), "Falso");
+    const bV = h("button", { class: "btn grande oliva vf", type: "button", onclick: () => finalizar(0, (res) => marcarUnico(0, res)) }, icone("check", 24, { traco: 3 }), tr("Verdadeiro"));
+    const bF = h("button", { class: "btn grande tomate vf", type: "button", onclick: () => finalizar(1, (res) => marcarUnico(1, res)) }, icone("x", 24, { traco: 3 }), tr("Falso"));
     botoes = [bV, bF];
     function marcarUnico(pos, res) { botoes.forEach((b, i) => { b.classList.toggle("escolhida", i === pos); if (i === res.posicaoCorreta) b.classList.add("era-certa"); else if (i === pos && !res.correto) b.classList.add("errada"); }); }
     raiz.append(h("div", { class: "vf-par" }, bV, bF));
   } else {
-    const lista = h("div", { class: q.tipo === "produto" ? "produtos" : "opcoes-quiz", role: "group", "aria-label": "Alternativas" });
+    const lista = h("div", { class: q.tipo === "produto" ? "produtos" : "opcoes-quiz", role: "group", "aria-label": tr("Alternativas") });
     function marcar(pos, res) { botoes.forEach((b, i) => { if (i === res.posicaoCorreta) b.classList.add("era-certa"); else if (i === pos && !res.correto) b.classList.add("errada"); if (i === pos) b.classList.add("escolhida"); }); }
     botoes = ordem.map((orig, pos) => {
       const conteudo = q.tipo === "produto" ? cartaProduto(q.produtos[orig], pos, opts) : [h("span", { class: "letra" }, LETRAS[pos]), h("span", { class: "alt-txt" }, inlineMd(q.opcoes[orig], { onTermo: null }))];
@@ -125,7 +126,7 @@ function enunciadoNodes(q, opts) {
   if (q.tipo === "lacuna" && texto.includes("___")) {
     const partes = texto.split("___");
     const frag = [];
-    partes.forEach((p, i) => { frag.push(inlineMd(p, { onTermo: opts.onTermo })); if (i < partes.length - 1) frag.push(h("span", { class: "lacuna", "aria-label": "lacuna" }, "      ")); });
+    partes.forEach((p, i) => { frag.push(inlineMd(p, { onTermo: opts.onTermo })); if (i < partes.length - 1) frag.push(h("span", { class: "lacuna", "aria-label": tr("lacuna") }, "      ")); });
     return frag;
   }
   return inlineMd(texto, { onTermo: opts.onTermo });

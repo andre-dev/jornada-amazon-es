@@ -1,4 +1,5 @@
 // Helpers de DOM. Regra: nunca usar innerHTML com dados do save/importação.
+import { tr } from "../i18n/index.js";
 // h() cria nós e usa textContent / createTextNode para qualquer string.
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -77,7 +78,7 @@ export function inlineMd(texto, { onTermo } = {}) {
     else if (tok.startsWith("[[")) {
       const nome = tok.slice(2, -2);
       const [chave, rotulo] = nome.split("|");
-      frag.append(h("button", { class: "chip-termo", type: "button", title: "Ver no glossário", onclick: (e) => { e.stopPropagation(); onTermo && onTermo(chave.trim()); } }, (rotulo || (resolverTermo && resolverTermo(chave.trim())) || chave).trim()));
+      frag.append(h("button", { class: "chip-termo", type: "button", title: tr("Ver no glossário"), onclick: (e) => { e.stopPropagation(); onTermo && onTermo(chave.trim()); } }, (rotulo || (resolverTermo && resolverTermo(chave.trim())) || chave).trim()));
     } else frag.append(h("em", null, tok.slice(1, -1)));
     ultimo = m.index + tok.length;
   }

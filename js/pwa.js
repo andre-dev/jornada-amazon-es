@@ -1,7 +1,7 @@
 // App instalável + offline: registra o service worker, avisa quando há versão nova
 // e guarda o convite de instalação do navegador para o botão "Instalar o app".
 import { h } from "./ui/dom.js";
-import { t } from "./i18n/index.js";
+import { tr } from "./i18n/index.js";
 
 let convite = null; // evento beforeinstallprompt (Chrome/Edge/Android)
 const ouvintes = new Set();
@@ -24,8 +24,8 @@ export async function instalar() {
 function faixaAtualizar(sw) {
   if (document.querySelector(".faixa-atualizar")) return;
   const faixa = h("div", { class: "faixa-atualizar", role: "status" },
-    h("span", null, t("Nova versão do jogo disponível.")),
-    h("button", { class: "btn sol", type: "button", onclick: () => { faixa.querySelector("button").disabled = true; sw.postMessage("atualizar"); } }, t("Atualizar")));
+    h("span", null, tr("Nova versão do jogo disponível.")),
+    h("button", { class: "btn sol", type: "button", onclick: () => { faixa.querySelector("button").disabled = true; sw.postMessage("atualizar"); } }, tr("Atualizar")));
   document.body.append(faixa);
 }
 

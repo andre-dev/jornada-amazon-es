@@ -1,3 +1,4 @@
+import { tr } from "../i18n/index.js";
 import { h, limpar } from "./dom.js";
 import { avatarSvg, PELES, COR_CABELO, NOMES } from "../art/avatar.js";
 import { AVATAR_OPCOES } from "../state/schema.js";
@@ -29,12 +30,12 @@ export function criarEditorAvatar(inicial, onChange, { nivelAcessorio = "mochila
     return h("div", { class: "editor-grupo" }, h("div", { class: "rotulo" }, titulo), lista);
   }
   grupos.append(
-    grupo("pele", "Tom de pele", PELES),
-    grupo("cabelo", "Cabelo", null),
-    grupo("corCabelo", "Cor do cabelo", COR_CABELO),
-    grupo("barba", "Barba", null),
-    grupo("roupa", "Roupa", null),
-    grupo("acessorio", "Acessório", null),
+    grupo("pele", tr("Tom de pele"), PELES),
+    grupo("cabelo", tr("Cabelo"), null),
+    grupo("corCabelo", tr("Cor do cabelo"), COR_CABELO),
+    grupo("barba", tr("Barba"), null),
+    grupo("roupa", tr("Roupa"), null),
+    grupo("acessorio", tr("Acessório"), null),
   );
   desenhar();
   const el = h("div", { class: "editor-avatar" }, previa, grupos);

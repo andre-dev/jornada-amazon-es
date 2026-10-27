@@ -1,3 +1,4 @@
+import { tr } from "../i18n/index.js";
 import { h } from "./dom.js";
 
 const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -46,7 +47,7 @@ export function abrirModal({ titulo, conteudo, acoes = [], fechavel = true, clas
   return { fechar, el: caixa };
 }
 
-export function confirmar({ titulo, texto, ok = "Confirmar", cancelar = "Cancelar", perigo = false }) {
+export function confirmar({ titulo, texto, ok = tr("Confirmar"), cancelar = tr("Cancelar"), perigo = false }) {
   return new Promise((resolve) => {
     abrirModal({
       titulo, conteudo: h("p", null, texto),

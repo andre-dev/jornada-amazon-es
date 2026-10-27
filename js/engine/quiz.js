@@ -1,4 +1,5 @@
 // Motor de quiz. Puro (sem DOM). Tipos: multipla, vf, ordenar, lacuna, produto.
+import { tr } from "../i18n/index.js";
 
 export const TIPOS = ["multipla", "vf", "ordenar", "lacuna", "produto"];
 
@@ -6,7 +7,7 @@ export function normalizarPergunta(p) {
   const tipo = TIPOS.includes(p.tipo) ? p.tipo : "multipla";
   const q = { id: p.id, tipo, enunciado: p.enunciado, explicacao: p.explicacao || "", licaoRef: p.licaoRef || "", dica: p.dica || "" };
   if (tipo === "vf") {
-    q.opcoes = ["Verdadeiro", "Falso"];
+    q.opcoes = [tr("Verdadeiro"), tr("Falso")];
     q.correta = typeof p.correta === "boolean" ? p.correta : p.correta === 0;
   } else if (tipo === "ordenar") {
     q.opcoes = p.opcoes.slice();
@@ -27,15 +28,15 @@ export function validarPergunta(p) {
   if (!p || typeof p !== "object") return ["pergunta vazia"];
   if (!p.id) erros.push("sem id");
   if (!p.enunciado) erros.push("sem enunciado");
-  if (!p.explicacao) erros.push("sem explicação");
-  if (!TIPOS.includes(p.tipo)) erros.push("tipo inválido: " + p.tipo);
+  if (!p.explicacao) erros.push(tr("sem explicação"));
+  if (!TIPOS.includes(p.tipo)) erros.push(tr("tipo inválido: ") + p.tipo);
   if (p.tipo === "vf") { if (typeof p.correta !== "boolean") erros.push("vf precisa de correta booleana"); }
-  else if (p.tipo === "ordenar") { if (!Array.isArray(p.opcoes) || p.opcoes.length < 3) erros.push("ordenar precisa de 3+ itens"); }
+  else if (p.tipo === "ordenar") { if (!Array.isArray(p.opcoes) || p.opcoes.length < 3) erros.push(tr("ordenar precisa de 3+ itens")); }
   else if (p.tipo === "produto") {
-    if (!Array.isArray(p.produtos) || p.produtos.length < 2) erros.push("produto precisa de 2+ produtos");
+    if (!Array.isArray(p.produtos) || p.produtos.length < 2) erros.push(tr("produto precisa de 2+ produtos"));
     else if (!Number.isInteger(p.correta) || p.correta < 0 || p.correta >= p.produtos.length) erros.push("correta fora do intervalo");
   } else {
-    if (!Array.isArray(p.opcoes) || p.opcoes.length < 2) erros.push("precisa de 2+ opções");
+    if (!Array.isArray(p.opcoes) || p.opcoes.length < 2) erros.push(tr("precisa de 2+ opções"));
     else if (!Number.isInteger(p.correta) || p.correta < 0 || p.correta >= p.opcoes.length) erros.push("correta fora do intervalo");
     if (p.tipo === "lacuna" && !String(p.enunciado).includes("___")) erros.push("lacuna sem ___");
   }
@@ -90,7 +91,7 @@ export function posicaoCorreta(visao) {
 /** Texto da resposta correta, para exibir na explicação. */
 export function textoCorreto(visao) {
   const { q } = visao;
-  if (q.tipo === "vf") return q.correta ? "Verdadeiro" : "Falso";
+  if (q.tipo === "vf") return q.correta ? tr("Verdadeiro") : tr("Falso");
   if (q.tipo === "ordenar") return q.correta.map((i) => q.opcoes[i]).join(" → ");
   return q.opcoes[q.correta];
 }

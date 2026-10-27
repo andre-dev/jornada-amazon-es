@@ -1,7 +1,9 @@
 // Tela de entrada: "Entrar com Google" (progresso salvo na conta) ou jogar sem conta.
+import { tr } from "../i18n/index.js";
 import { h, limpar } from "./dom.js";
 import { personagem } from "../art/characters.js";
 import { mensagemErroLogin } from "../nuvem/firebase.js";
+import { seletorIdioma } from "./idioma.js";
 
 const CHAVE_CONVIDADO = "jornada-amazon-es:convidado";
 
@@ -29,7 +31,7 @@ function logoG() {
 export function telaLogin(alvo, fb) {
   return new Promise((resolve) => {
     const erro = h("p", { role: "alert", class: "muted", style: { margin: 0, minHeight: "1.4em", color: "var(--tomate)" } });
-    const btn = h("button", { class: "btn btn-google", type: "button", style: { justifyContent: "center", gap: "12px", width: "100%", background: "#fff", color: "#1f1f1f" } }, logoG(), "Entrar com Google");
+    const btn = h("button", { class: "btn btn-google", type: "button", style: { justifyContent: "center", gap: "12px", width: "100%", background: "#fff", color: "#1f1f1f" } }, logoG(), tr("Entrar com Google"));
     btn.addEventListener("click", async () => {
       btn.disabled = true; erro.textContent = "";
       try {
@@ -41,20 +43,21 @@ export function telaLogin(alvo, fb) {
         btn.disabled = false;
       }
     });
-    const convidado = h("button", { class: "btn-link", type: "button", style: { background: "none", border: 0, color: "inherit", textDecoration: "underline", cursor: "pointer", font: "inherit", padding: "8px" } }, "Jogar sem conta");
+    const convidado = h("button", { class: "btn-link", type: "button", style: { background: "none", border: 0, color: "inherit", textDecoration: "underline", cursor: "pointer", font: "inherit", padding: "8px" } }, tr("Jogar sem conta"));
     convidado.addEventListener("click", () => {
       try { localStorage.setItem(CHAVE_CONVIDADO, "1"); } catch { /* ignora */ }
       resolve({ convidado: true });
     });
     limpar(alvo).append(
       h("div", { class: "card centro pilha", style: { maxWidth: "420px", margin: "32px auto", padding: "28px 22px", gap: "14px" } },
+        h("div", { class: "centro" }, seletorIdioma({ compacto: true })),
         h("div", { style: { width: "120px", margin: "0 auto" } }, personagem("caixote")),
-        h("h1", { style: { margin: 0 } }, "Do Zero ao Chefão"),
-        h("p", { style: { margin: 0 } }, "Aprenda a vender na Amazon da Espanha e da Europa, jogando."),
-        h("p", { class: "muted", style: { margin: 0, fontSize: ".95rem" } }, "Entre com sua conta Google para salvar o progresso e continuar de onde parou, no celular ou no computador."),
+        h("h1", { style: { margin: 0 } }, tr("Do Zero ao Chefão")),
+        h("p", { style: { margin: 0 } }, tr("Aprenda a vender na Amazon da Espanha e da Europa, jogando.")),
+        h("p", { class: "muted", style: { margin: 0, fontSize: ".95rem" } }, tr("Entre com sua conta Google para salvar o progresso e continuar de onde parou, no celular ou no computador.")),
         btn, erro,
         h("div", { style: { display: "grid", gap: "2px", justifyItems: "center" } }, convidado,
-          h("span", { class: "muted", style: { fontSize: ".85rem" } }, "Sem conta, o progresso fica só neste navegador e pode se perder."))));
+          h("span", { class: "muted", style: { fontSize: ".85rem" } }, tr("Sem conta, o progresso fica só neste navegador e pode se perder.")))));
     btn.focus();
   });
 }

@@ -1,4 +1,5 @@
 // Renderizador dos cards de conteúdo da lição (texto, dica, comparação, passos, alerta, delegar, exemplo, cálculo, fluxo).
+import { tr } from "../i18n/index.js";
 import { h, md, inlineMd } from "./dom.js";
 import { icone } from "./icons.js";
 import { dicaCaixote } from "./components.js";
@@ -17,7 +18,7 @@ function rodapeTermos(card, onTermo) {
   if (!card.termos || !card.termos.length) return null;
   const itens = card.termos.map((k) => termoPorChave(k)).filter(Boolean);
   if (!itens.length) return null;
-  return h("div", { class: "card-termos" }, h("span", { class: "pequeno muted" }, "Termos: "), itens.map((t) => h("button", { class: "chip-termo", type: "button", onclick: () => onTermo(t.chave) }, t.termo)));
+  return h("div", { class: "card-termos" }, h("span", { class: "pequeno muted" }, tr("Termos: ")), itens.map((t) => h("button", { class: "chip-termo", type: "button", onclick: () => onTermo(t.chave) }, t.termo)));
 }
 
 export function renderCard(card, { onTermo }) {
@@ -28,13 +29,13 @@ export function renderCard(card, { onTermo }) {
 
   switch (tipo) {
     case "dica":
-      return h("article", { class: "card-aula tipo-dica" }, dicaCaixote(md(card.corpo, o), { titulo: card.titulo || "Dica do Caixote" }), rodapeTermos(card, onTermo));
+      return h("article", { class: "card-aula tipo-dica" }, dicaCaixote(md(card.corpo, o), { titulo: card.titulo || tr("Dica do Caixote") }), rodapeTermos(card, onTermo));
     case "alerta":
-      return base("tipo-alerta", h("div", { class: "faixa" }, icone("alerta", 24), h("h2", null, card.titulo || "Atenção")), md(card.corpo, o));
+      return base("tipo-alerta", h("div", { class: "faixa" }, icone("alerta", 24), h("h2", null, card.titulo || tr("Atenção"))), md(card.corpo, o));
     case "delegar":
-      return base("tipo-delegar", h("div", { class: "faixa" }, icone("pessoas", 24), h("h2", null, card.titulo || "Quem faz isso por você")), md(card.corpo, o));
+      return base("tipo-delegar", h("div", { class: "faixa" }, icone("pessoas", 24), h("h2", null, card.titulo || tr("Quem faz isso por você"))), md(card.corpo, o));
     case "exemplo":
-      return base("tipo-exemplo", h("div", { class: "faixa" }, icone("lampada", 24), h("h2", null, card.titulo || "Exemplo na prática")), md(card.corpo, o));
+      return base("tipo-exemplo", h("div", { class: "faixa" }, icone("lampada", 24), h("h2", null, card.titulo || tr("Exemplo na prática"))), md(card.corpo, o));
     case "comparacao": {
       const cols = card.colunas || [];
       const tabela = h("div", { class: "tabela-wrap" }, h("table", { class: "tabela" },

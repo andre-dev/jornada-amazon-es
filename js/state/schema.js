@@ -25,7 +25,7 @@ export function saveNovo(agora = new Date()) {
     conquistas: {},
     checklist: {},
     cenarios: [],
-    config: { tema: "auto", modoLivre: false, som: false, reduzirAnimacoes: false, ranking: true, idioma: "" },
+    config: { tema: "auto", modoLivre: false, som: false, reduzirAnimacoes: false, ranking: true },
     stats: { acertos: 0, erros: 0, segundosEstudo: 0 },
     contadores: { margens: 0, glossario: 0, perfeitos: 0, termosVistos: {} },
     ultimo: { licao: "", card: 0 },
@@ -110,7 +110,7 @@ export function normalizar(s) {
     licoes: {}, chefes: {}, conquistas: {}, checklist: {}, cenarios: [],
     config: (() => {
       const c = isObj(s.config) ? s.config : {};
-      return { tema: ["auto", "light", "dark"].includes(c.tema) ? c.tema : "auto", modoLivre: bool(c.modoLivre), som: bool(c.som), reduzirAnimacoes: bool(c.reduzirAnimacoes), ranking: bool(c.ranking, true), idioma: ["pt", "es", "en"].includes(c.idioma) ? c.idioma : "" };
+      return { tema: ["auto", "light", "dark"].includes(c.tema) ? c.tema : "auto", modoLivre: bool(c.modoLivre), som: bool(c.som), reduzirAnimacoes: bool(c.reduzirAnimacoes), ranking: bool(c.ranking, true) };
     })(),
     stats: (() => {
       const t = isObj(s.stats) ? s.stats : {};

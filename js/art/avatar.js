@@ -1,4 +1,5 @@
 // Avatar montável em SVG (arte original). Todos os valores vêm de tabelas: nada do save é interpolado cru.
+import { tr } from "../i18n/index.js";
 import { svgDeString, esc } from "../ui/dom.js";
 import { AVATAR_OPCOES } from "../state/schema.js";
 
@@ -8,12 +9,12 @@ const K = KW(3);
 export const PELES = ["#FDDCC0", "#F3C29B", "#D9A070", "#A86D45", "#6B4328"];
 export const COR_CABELO = ["#2B1D14", "#6B3F1D", "#D9A441", "#B8431F", "#A9AEB8"];
 export const NOMES = {
-  pele: ["Clara", "Bege", "Morena", "Parda", "Escura"],
-  cabelo: ["Raspado", "Penteado", "Longo", "Cacheado", "Coque", "Careca"],
-  corCabelo: ["Preto", "Castanho", "Loiro", "Ruivo", "Grisalho"],
-  barba: ["Sem barba", "Barba curta", "Barba cheia"],
-  roupa: ["Camisa", "Moletom", "Terno casual"],
-  acessorio: ["Nenhum", "Óculos", "Boné"],
+  pele: [tr("Clara"), tr("Bege"), tr("Morena"), tr("Parda"), tr("Escura")],
+  cabelo: [tr("Raspado"), tr("Penteado"), tr("Longo"), tr("Cacheado"), tr("Coque"), tr("Careca")],
+  corCabelo: [tr("Preto"), tr("Castanho"), tr("Loiro"), tr("Ruivo"), tr("Grisalho")],
+  barba: [tr("Sem barba"), tr("Barba curta"), tr("Barba cheia")],
+  roupa: [tr("Camisa"), tr("Moletom"), tr("Terno casual")],
+  acessorio: [tr("Nenhum"), tr("Óculos"), tr("Boné")],
 };
 let contador = 0;
 
@@ -84,7 +85,7 @@ function maletaSvg() {
 }
 
 /** opcoes: objeto de avatar do save. extra: { nivelAcessorio: "mochila"|"maleta"|"coroa", titulo } */
-export function avatarSvgString(opcoes = {}, { nivelAcessorio = "mochila", titulo = "Seu personagem" } = {}) {
+export function avatarSvgString(opcoes = {}, { nivelAcessorio = "mochila", titulo = tr("Seu personagem") } = {}) {
   const o = {};
   for (const [k, n] of Object.entries(AVATAR_OPCOES)) { const v = opcoes[k]; o[k] = Number.isInteger(v) && v >= 0 && v < n ? v : 0; }
   const eq = (opcoes.equipados && typeof opcoes.equipados === "object") ? opcoes.equipados : {};

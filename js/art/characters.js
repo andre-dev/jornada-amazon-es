@@ -1,4 +1,5 @@
 // Mascote (Caixote) e os 9 chefes — arte 100% original em SVG. Nada de logotipo, sorriso-seta ou identidade de terceiros.
+import { tr } from "../i18n/index.js";
 import { svgDeString, esc } from "../ui/dom.js";
 
 const INK = "#22223B";
@@ -15,7 +16,7 @@ const moeda = (cx, cy, r) => `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="#F
 
 /* ---------------- Caixote, o mascote ---------------- */
 function caixote() {
-  return wrap("0 0 160 170", "Caixote, o mascote em forma de caixa", `
+  return wrap("0 0 160 170", tr("Caixote, o mascote em forma de caixa"), `
     ${sombra(80, 160, 46)}
     <path d="M80 54 C78 40 74 34 66 30" fill="none" stroke="#3F9B4D" stroke-width="4" stroke-linecap="round"/>
     <path d="M66 30 C54 22 46 28 48 36 C56 38 62 36 66 30Z" fill="#5BBF6A" ${K2}/>
@@ -39,7 +40,7 @@ function caixote() {
 
 /* ---------------- Chefes ---------------- */
 function nevoeiro() {
-  return wrap("0 0 200 200", "O Nevoeiro da Dúvida, uma nuvem cinza preocupada", `
+  return wrap("0 0 200 200", tr("O Nevoeiro da Dúvida, uma nuvem cinza preocupada"), `
     ${sombra(100, 182, 62)}
     <path d="M46 150 C20 150 16 114 44 108 C42 78 80 62 98 82 C110 56 154 66 152 98 C182 100 186 150 154 150Z" fill="#C9CCDA" ${K}/>
     <path d="M40 160 q10 8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#E3E5EE" stroke-width="7" stroke-linecap="round"/>
@@ -53,7 +54,7 @@ function nevoeiro() {
 }
 
 function burocratio() {
-  return wrap("0 0 200 200", "Burocrátio, o Carimbador, um monstro de formulários", `
+  return wrap("0 0 200 200", tr("Burocrátio, o Carimbador, um monstro de formulários"), `
     ${sombra(100, 188, 54)}
     <rect x="56" y="40" width="88" height="124" rx="6" fill="#F3EAD2" ${K} transform="rotate(-6 100 100)"/>
     <rect x="58" y="38" width="88" height="124" rx="6" fill="#FFF8E6" ${K} transform="rotate(4 100 100)"/>
@@ -77,7 +78,7 @@ function hidra() {
     <circle cx="${x - 9}" cy="${y - 5}" r="6" fill="#fff" ${K2}/><circle cx="${x + 9}" cy="${y - 5}" r="6" fill="#fff" ${K2}/>
     <circle cx="${x - 9 + olhoDir}" cy="${y - 4}" r="2.6" fill="${INK}"/><circle cx="${x + 9 + olhoDir}" cy="${y - 4}" r="2.6" fill="${INK}"/>
     <path d="M${x - 16} ${y - 14} L${x - 4} ${y - 10} M${x + 16} ${y - 14} L${x + 4} ${y - 10}" ${K2} fill="none"/>`;
-  return wrap("0 0 200 200", "A Hidra das Tendências, com três cabeças", `
+  return wrap("0 0 200 200", tr("A Hidra das Tendências, com três cabeças"), `
     ${sombra(100, 190, 62)}
     <path d="M76 150 C60 120 50 100 50 84" fill="none" stroke="#5BBF6A" stroke-width="16" stroke-linecap="round"/><path d="M76 150 C60 120 50 100 50 84" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round" opacity=".0"/>
     <path d="M100 150 C100 120 100 96 100 66" fill="none" stroke="#5BBF6A" stroke-width="16" stroke-linecap="round"/>
@@ -91,7 +92,7 @@ function hidra() {
 }
 
 function capitao() {
-  return wrap("0 0 200 200", "Capitão Container, um pirata com um contêiner", `
+  return wrap("0 0 200 200", tr("Capitão Container, um pirata com um contêiner"), `
     ${sombra(100, 190, 80)}
     <rect x="16" y="112" width="168" height="72" rx="4" fill="#FF5A4E" ${K}/>
     <g stroke="#B8341F" stroke-width="4"><path d="M36 116 V180 M56 116 V180 M76 116 V180 M96 116 V180 M116 116 V180 M136 116 V180 M156 116 V180 M176 116 V180"/></g>
@@ -109,7 +110,7 @@ function capitao() {
 }
 
 function contador() {
-  return wrap("0 0 200 200", "O Contador Voraz, uma calculadora com dentes", `
+  return wrap("0 0 200 200", tr("O Contador Voraz, uma calculadora com dentes"), `
     ${sombra(100, 188, 56)}
     <g transform="rotate(-5 100 100)">
     <rect x="44" y="22" width="112" height="156" rx="16" fill="#4A4A68" ${K}/>
@@ -128,7 +129,7 @@ function contador() {
 }
 
 function esfinge() {
-  return wrap("0 0 200 200", "Esfinge do Algoritmo, que faz enigmas sobre listagem", `
+  return wrap("0 0 200 200", tr("Esfinge do Algoritmo, que faz enigmas sobre listagem"), `
     ${sombra(100, 190, 76)}
     <path d="M24 176 C20 140 44 120 72 118 H128 C156 120 180 140 176 176Z" fill="#E8B873" ${K}/>
     <path d="M50 176 V156 M150 176 V156" stroke="#C99A55" stroke-width="3"/>
@@ -148,7 +149,7 @@ function esfinge() {
 }
 
 function drakon() {
-  return wrap("0 0 200 200", "Drakón do CPC, um dragão que cospe moedas", `
+  return wrap("0 0 200 200", tr("Drakón do CPC, um dragão que cospe moedas"), `
     ${sombra(100, 190, 58)}
     <path d="M60 110 C20 90 8 60 14 34 C36 52 54 56 76 66Z" fill="#8B5CF6" ${K}/><path d="M140 110 C180 90 192 60 186 34 C164 52 146 56 124 66Z" fill="#8B5CF6" ${K}/>
     <path d="M40 66 L24 44 M30 80 L16 60 M160 66 L176 44 M170 80 L184 60" stroke="${INK}" stroke-width="3" fill="none"/>
@@ -168,7 +169,7 @@ function drakon() {
 }
 
 function auditor() {
-  return wrap("0 0 200 200", "O Auditor Sombrio, uma sombra encapuzada com prancheta", `
+  return wrap("0 0 200 200", tr("O Auditor Sombrio, uma sombra encapuzada com prancheta"), `
     ${sombra(100, 190, 56)}
     <path d="M100 14 C66 20 54 54 56 86 C40 110 34 160 38 186 H162 C166 160 160 110 144 86 C146 54 134 20 100 14Z" fill="#3B2F63" ${K}/>
     <path d="M100 30 C78 34 72 56 74 80 C74 96 126 96 126 80 C128 56 122 34 100 30Z" fill="#151526" ${K2}/>
@@ -186,7 +187,7 @@ function chefao() {
     const a = (-165 + i * (150 / 8)) * Math.PI / 180;
     return estrela(100 + 54 * Math.cos(a), 52 + 46 * Math.sin(a), 7, "#FFC23C", 1.8);
   }).join("");
-  return wrap("0 0 200 200", "O CHEFÃO DAS VENDAS, um gigante dourado com coroa de estrelas", `
+  return wrap("0 0 200 200", tr("O CHEFÃO DAS VENDAS, um gigante dourado com coroa de estrelas"), `
     ${sombra(100, 192, 74)}
     <path d="M40 80 C20 120 22 170 30 190 H170 C178 170 180 120 160 80Z" fill="#8B5CF6" ${K}/>
     <path d="M44 100 C60 120 140 120 156 100 L150 190 H50Z" fill="#7343D6" opacity=".55"/>

@@ -1,5 +1,6 @@
 // Persistência: localStorage (cache/offline) + db do Artifact (sincroniza celular/PC) + exportar/importar.
 // Tudo é defensivo: sem localStorage, sem window.claude, sem rede, o jogo continua funcionando.
+import { tr } from "../i18n/index.js";
 import { CHAVE_LOCAL, migrar, validarImportacao, hojeISO } from "./schema.js";
 
 const DEBOUNCE_MS = 1200;
@@ -82,8 +83,8 @@ export function criarPersistencia(store, amb = {}, { onStatus = () => {}, onAvis
   const mudarConta = (patch) => { Object.assign(conta, patch); try { onConta({ ...conta }); } catch { /* ignora */ } };
 
   function status() {
-    if (!nuvemOk) return onStatus(STATUS.LOCAL, "Salvo só neste navegador");
-    onStatus(gravando || pendente ? STATUS.SALVANDO : STATUS.OK, gravando || pendente ? "Salvando na sua conta…" : "Salvo na sua conta");
+    if (!nuvemOk) return onStatus(STATUS.LOCAL, tr("Salvo só neste navegador"));
+    onStatus(gravando || pendente ? STATUS.SALVANDO : STATUS.OK, gravando || pendente ? tr("Salvando na sua conta…") : tr("Salvo na sua conta"));
   }
 
   function desligar(motivo) {
@@ -115,7 +116,7 @@ export function criarPersistencia(store, amb = {}, { onStatus = () => {}, onAvis
       }
       if (["quota_exceeded", "invalid_argument", "not_granted", "revoked", "capability_disabled", "capability_removed", "permission-denied", "unauthenticated", "resource-exhausted"].includes(code)) {
         desligar(["invalid_argument", "not_granted", "permission-denied", "unauthenticated"].includes(code) ? "sem-permissao" : "erro");
-        avisarUmaVez("nuvem", "Não consegui salvar na sua conta: o progresso fica só neste navegador. Veja como resolver no Perfil.");
+        avisarUmaVez("nuvem", tr("Não consegui salvar na sua conta: o progresso fica só neste navegador. Veja como resolver no Perfil."));
       }
     } finally {
       gravando = false;
@@ -268,10 +269,10 @@ export async function baixarArquivo(nome, texto, mime = "application/json") {
 export function lerArquivoTexto(arquivo) {
   return new Promise((resolve, reject) => {
     if (!arquivo) return reject(new Error("sem arquivo"));
-    if (arquivo.size > 2_000_000) return reject(new Error("O arquivo é grande demais para ser um backup."));
+    if (arquivo.size > 2_000_000) return reject(new Error(tr("O arquivo é grande demais para ser um backup.")));
     const r = new FileReader();
     r.onload = () => resolve(String(r.result));
-    r.onerror = () => reject(new Error("Não consegui ler o arquivo."));
+    r.onerror = () => reject(new Error(tr("Não consegui ler o arquivo.")));
     r.readAsText(arquivo);
   });
 }

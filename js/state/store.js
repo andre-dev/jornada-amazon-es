@@ -196,7 +196,6 @@ export function criarStore(inicial, { hoje = () => hojeISO(), agora = () => new 
       mut((s) => {
         if (parcial.tema && ["auto", "light", "dark"].includes(parcial.tema)) s.config.tema = parcial.tema;
         for (const k of ["modoLivre", "som", "reduzirAnimacoes", "ranking"]) if (typeof parcial[k] === "boolean") s.config[k] = parcial[k];
-        if (["pt", "es", "en"].includes(parcial.idioma)) s.config.idioma = parcial.idioma;
       }, "config");
     },
     somarEstudo(seg) { if (seg > 0) mut((s) => { s.stats.segundosEstudo += Math.round(seg); }, "tempo"); },

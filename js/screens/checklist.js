@@ -1,4 +1,5 @@
 // Missões da Vida Real: tarefas concretas, com notas, data e XP na primeira conclusão.
+import { tr, localAtual } from "../i18n/index.js";
 import { h, limpar } from "../ui/dom.js";
 import { icone } from "../ui/icons.js";
 import { tituloTela, barra, atualizarBarra, badge } from "../ui/components.js";
@@ -9,19 +10,19 @@ import { XP } from "../engine/rewards.js";
 
 function dataBR(iso) {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString(localAtual(), { day: "2-digit", month: "short", year: "numeric" });
 }
 
 export default function tela({ store }) {
   let filtro = "todas";
   const raiz = h("div", { class: "pilha" });
-  const progresso = barra(0, { cor: "oliva", rotulo: "Missões concluídas" });
+  const progresso = barra(0, { cor: "oliva", rotulo: tr("Missões concluídas") });
   const resumo = h("p", { class: "muted", style: { margin: 0 } });
   const lista = h("div", { class: "pilha" });
 
   const feitas = () => MISSOES.filter((m) => store.estado.checklist[m.id]?.feito).length;
   function atualizarResumo() {
-    resumo.textContent = `${feitas()} de ${MISSOES.length} missões concluídas. Cada missão paga ${XP.missao} XP na primeira vez.`;
+    resumo.textContent = tr("{f} de {t} missões concluídas. Cada missão paga {xp} XP na primeira vez.", { f: feitas(), t: MISSOES.length, xp: XP.missao });
     atualizarBarra(progresso, feitas() / MISSOES.length);
   }
 
@@ -35,26 +36,26 @@ export default function tela({ store }) {
     function marcar() {
       const r = reg();
       botao.setAttribute("aria-pressed", String(r.feito));
-      botao.setAttribute("aria-label", (r.feito ? "Desmarcar: " : "Marcar como feita: ") + m.titulo);
+      botao.setAttribute("aria-label", (r.feito ? tr("Desmarcar: ") : tr("Marcar como feita: ")) + m.titulo);
       limpar(botao).append(r.feito ? icone("check", 24, { traco: 3.5 }) : "");
       caixa.classList.toggle("feita", r.feito);
-      data.textContent = r.feito && r.em ? "Feita em " + dataBR(r.em) : "";
+      data.textContent = r.feito && r.em ? tr("Feita em ") + dataBR(r.em) : "";
     }
     botao.addEventListener("click", () => { store.alternarMissao(m.id, !reg().feito); marcar(); atualizarResumo(); if (filtro !== "todas") setTimeout(desenhar, 350); });
     const fonte = m.fonte ? fontePorId(m.fonte) : null;
-    const nota = h("textarea", { class: "entrada", rows: "3", maxlength: "2000", placeholder: "Suas anotações: nomes, telefones, datas, valores…", "aria-label": "Anotações da missão " + m.titulo });
+    const nota = h("textarea", { class: "entrada", rows: "3", maxlength: "2000", placeholder: tr("Suas anotações: nomes, telefones, datas, valores…"), "aria-label": tr("Anotações da missão {titulo}", { titulo: m.titulo }) });
     nota.value = reg().nota || "";
     let t;
     nota.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => store.salvarNota(m.id, nota.value), 500); });
     nota.addEventListener("blur", () => { clearTimeout(t); if (nota.value !== (reg().nota || "")) store.salvarNota(m.id, nota.value); });
     detalhes.append(
-      h("summary", null, "Ver detalhes"),
+      h("summary", null, tr("Ver detalhes")),
       h("div", { class: "pilha missao-corpo" },
         h("p", null, m.descricao),
-        h("p", null, h("strong", null, "Por que importa: "), m.porque),
-        h("p", null, icone("pessoas", 18), " ", h("strong", null, "Quem pode fazer por você: "), m.quem),
+        h("p", null, h("strong", null, tr("Por que importa: ")), m.porque),
+        h("p", null, icone("pessoas", 18), " ", h("strong", null, tr("Quem pode fazer por você: ")), m.quem),
         fonte ? h("p", { class: "pequeno" }, icone("link", 16), " ", h("a", { href: fonte.url, target: "_blank", rel: "noopener noreferrer" }, fonte.titulo)) : null,
-        h("div", { class: "campo" }, h("span", { class: "rotulo" }, "Anotações"), nota)));
+        h("div", { class: "campo" }, h("span", { class: "rotulo" }, tr("Anotações")), nota)));
     caixa.append(botao, h("div", { class: "missao-info" }, titulo, data, detalhes));
     marcar();
     return caixa;
@@ -76,18 +77,18 @@ export default function tela({ store }) {
         h("div", { class: "linha" }, h("h2", { style: { margin: 0, flex: 1 } }, `${w.emoji} ${w.titulo}`), badge(`${feitasMundo}/${totalMundo}`, feitasMundo === totalMundo ? "oliva" : "sol")),
         h("ul", { class: "missoes" }, ms.map(item))));
     }
-    if (!total) lista.append(h("div", { class: "card plano centro" }, h("p", { style: { margin: 0 } }, filtro === "feitas" ? "Nenhuma missão feita ainda. Escolha uma e comece!" : "Nada pendente. Você zerou a lista!")));
+    if (!total) lista.append(h("div", { class: "card plano centro" }, h("p", { style: { margin: 0 } }, filtro === "feitas" ? tr("Nenhuma missão feita ainda. Escolha uma e comece!") : tr("Nada pendente. Você zerou a lista!"))));
   }
 
-  const seg = h("div", { class: "segmento", role: "group", "aria-label": "Filtrar missões" });
-  const opcoes = [["todas", "Todas"], ["pendentes", "Pendentes"], ["feitas", "Feitas"]];
+  const seg = h("div", { class: "segmento", role: "group", "aria-label": tr("Filtrar missões") });
+  const opcoes = [["todas", tr("Todas")], ["pendentes", tr("Pendentes")], ["feitas", tr("Feitas")]];
   const botoes = opcoes.map(([v, t]) => h("button", { type: "button", "aria-pressed": String(v === filtro), onclick: () => { filtro = v; botoes.forEach((b, i) => b.setAttribute("aria-pressed", String(opcoes[i][0] === v))); desenhar(); } }, t));
   seg.append(...botoes);
 
   raiz.append(
-    tituloTela("Missões da vida real", "O que você faz de verdade para montar o negócio."),
+    tituloTela(tr("Missões da vida real"), tr("O que você faz de verdade para montar o negócio.")),
     h("div", { class: "card" }, resumo, progresso),
-    h("div", { class: "card sol pequeno" }, h("strong", null, "Isto não é aconselhamento jurídico ou fiscal."), " Use as missões como roteiro e confirme os detalhes com a gestoría, o advogado e as páginas oficiais."),
+    h("div", { class: "card sol pequeno" }, h("strong", null, tr("Isto não é aconselhamento jurídico ou fiscal.")), tr(" Use as missões como roteiro e confirme os detalhes com a gestoría, o advogado e as páginas oficiais.")),
     seg, lista);
   atualizarResumo(); desenhar();
   return raiz;

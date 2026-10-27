@@ -1,5 +1,6 @@
 // Calculadora de margem FBA/FBM. Funções puras: leem content/fees.js e não tocam no DOM.
 // Todos os valores em euros. Taxas da Amazon sem IVA; preço de venda COM IVA (como na loja).
+import { tr } from "../i18n/index.js";
 import { FEES, categoriaPorId } from "../content/fees.js";
 
 const arred = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
@@ -101,7 +102,7 @@ export function armazenamentoUnidade({ dim, categoriaId, periodo = "janSet", per
 export function calcularMargem(e) {
   const iva = e.ivaPct ?? FEES.ivaES.geral;
   const preco = e.precoComIva;
-  if (!(preco > 0)) return { valido: false, erro: "Informe o preço de venda." };
+  if (!(preco > 0)) return { valido: false, erro: tr("Informe o preço de venda.") };
   const modelo = e.modelo || "fba";
   const receitaLiquida = arred(preco / (1 + iva));
   const ivaAPagar = arred(preco - receitaLiquida);
@@ -109,7 +110,7 @@ export function calcularMargem(e) {
   let logistica = 0, fba = null, armazenamento = 0;
   if (modelo === "fba") {
     fba = taxaFba({ dim: e.dim, pesoG: e.pesoG, precoComIva: preco, categoriaId: e.categoriaId, perigoso: e.perigoso });
-    if (!fba) return { valido: false, erro: "O produto passa dos limites de tamanho/peso tabelados. Confira a calculadora oficial." };
+    if (!fba) return { valido: false, erro: tr("O produto passa dos limites de tamanho/peso tabelados. Confira a calculadora oficial.") };
     logistica = fba.total;
     armazenamento = armazenamentoUnidade({ dim: e.dim, categoriaId: e.categoriaId, periodo: e.periodo, perigoso: e.perigoso, meses: e.mesesArmazenados ?? 1 });
   } else logistica = e.freteFbm || 0;
@@ -123,14 +124,14 @@ export function calcularMargem(e) {
   const custoDevolucao = arred(dev * (logistica + admin + (e.perdaDevolucaoPct ?? 0) * (custoProduto + frete + aduana)));
   const custoUnidade = arred(custoProduto + frete + aduana);
   const custos = [
-    { id: "produto", rotulo: "Produto", valor: custoProduto },
-    { id: "frete", rotulo: "Frete até o armazém", valor: frete },
-    { id: "aduana", rotulo: "Direitos aduaneiros", valor: aduana },
-    { id: "comissao", rotulo: "Comissão da Amazon", valor: com },
-    { id: "logistica", rotulo: modelo === "fba" ? "Logística FBA" : "Envio ao cliente", valor: logistica },
-    { id: "armazenamento", rotulo: "Armazenamento", valor: armazenamento },
-    { id: "ppc", rotulo: "Anúncios", valor: ppc },
-    { id: "devolucoes", rotulo: "Devoluções", valor: custoDevolucao },
+    { id: "produto", rotulo: tr("Produto"), valor: custoProduto },
+    { id: "frete", rotulo: tr("Frete até o armazém"), valor: frete },
+    { id: "aduana", rotulo: tr("Direitos aduaneiros"), valor: aduana },
+    { id: "comissao", rotulo: tr("Comissão da Amazon"), valor: com },
+    { id: "logistica", rotulo: modelo === "fba" ? tr("Logística FBA") : tr("Envio ao cliente"), valor: logistica },
+    { id: "armazenamento", rotulo: tr("Armazenamento"), valor: armazenamento },
+    { id: "ppc", rotulo: tr("Anúncios"), valor: ppc },
+    { id: "devolucoes", rotulo: tr("Devoluções"), valor: custoDevolucao },
   ];
   const totalCustos = arred(custos.reduce((a, c) => a + c.valor, 0));
   const lucro = arred(receitaLiquida - totalCustos);

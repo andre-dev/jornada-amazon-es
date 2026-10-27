@@ -8,6 +8,8 @@ export const IDIOMAS = [
   { id: "en", nome: "English", curto: "EN", html: "en", local: "en-GB" },
 ];
 
+export const CHAVE_IDIOMA = "jornada-amazon-es:idioma";
+
 let atual = "pt";
 let dic = {};
 
@@ -45,4 +47,13 @@ export function t(texto, vars) {
 /** Escolhe a forma singular/plural: tn("{n} lição", "{n} lições", n). */
 export function tn(singular, plural, n, vars = {}) {
   return t(n === 1 ? singular : plural, { n, ...vars });
+}
+
+/** Mesmo que t(); nome curto usado no código para não colidir com variáveis locais chamadas t. */
+export const tr = t;
+
+/** Troca o idioma: guarda neste aparelho e recarrega o jogo (o progresso não muda). */
+export function trocarIdioma(id) {
+  try { localStorage.setItem(CHAVE_IDIOMA, id); } catch { /* ignora */ }
+  location.reload();
 }
