@@ -38,7 +38,7 @@ export default {
     "opcoes": [
      "€3,000, no exceptions",
      "€1, with protective rules until it reaches €3,000",
-     "€60,000",
+     "60,000 euros",
      "There's no share capital"
     ],
     "correta": 1,

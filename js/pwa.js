@@ -34,8 +34,9 @@ export function iniciarPWA() {
   window.addEventListener("appinstalled", () => { convite = null; avisar(); });
   if (!("serviceWorker" in navigator)) return;
   let recarregando = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => { if (!recarregando) { recarregando = true; location.reload(); } });
-  window.addEventListener("load", async () => {
+  const tinhaControle = !!navigator.serviceWorker.controller; // na 1ª instalação não precisa recarregar
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (tinhaControle && !recarregando) { recarregando = true; location.reload(); } });
+  const registrar = async () => {
     try {
       const reg = await navigator.serviceWorker.register("sw.js");
       const verificar = (sw) => { if (sw && sw.state === "installed" && navigator.serviceWorker.controller) faixaAtualizar(sw); };
@@ -47,5 +48,8 @@ export function iniciarPWA() {
       // procura versão nova quando o app volta para a frente
       document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") reg.update().catch(() => {}); });
     } catch (e) { console.warn("service worker:", e); }
-  });
+  };
+  // o boot espera o login, então o "load" pode já ter acontecido
+  if (document.readyState === "complete") registrar();
+  else window.addEventListener("load", registrar, { once: true });
 }
