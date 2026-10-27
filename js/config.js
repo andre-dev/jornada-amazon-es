@@ -1,8 +1,11 @@
 // Configuração do Firebase (login com Google + salvamento na nuvem).
-// Estes dados são públicos por natureza; a segurança vem das regras do Firestore
-// (cada pessoa só lê e grava o próprio documento em jogadores/{uid}).
-export const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyA4R6ErJujWizrQMwkSs0dHtX14k-HFs6o",
+// A apiKey NÃO fica no repositório: o GitHub Actions troca o marcador abaixo
+// pelo segredo FIREBASE_API_KEY na hora de publicar (ver .github/workflows/pages.yml).
+// A segurança dos dados vem das regras do Firestore (cada pessoa só acessa jogadores/{uid}).
+const API_KEY = "__FIREBASE_API_KEY__";
+
+export const FIREBASE_CONFIG = API_KEY.startsWith("__") ? null : {
+  apiKey: API_KEY,
   authDomain: "jornada--es.firebaseapp.com",
   projectId: "jornada--es",
   storageBucket: "jornada--es.firebasestorage.app",
