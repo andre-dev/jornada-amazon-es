@@ -37,7 +37,8 @@ export default function mapa({ store, ir, persist }) {
       h("p", { class: "hero-sub" }, passo.tipo === "fim" ? "Você chegou à Coroa da Europa. Que jornada!" : `${feitas} de ${TOTAL_LICOES} lições feitas. Próximo passo: ${passo.titulo}.`),
       h("div", { class: "linha" },
         botao(rotuloContinuar, { classe: "oliva grande", icon: "seta", onclick: () => ir(destino) }),
-        h("span", { class: "badge" }, `Nível ${info.nivel}`))),
+        h("span", { class: "badge" }, `Nível ${info.nivel}`),
+        h("a", { class: "badge rk-atalho", href: "#/ranking" }, "🏆 Ranking"))),
     h("div", { class: "hero-caixote", "aria-hidden": "true" }, personagem("caixote")));
 
   const trilha = h("div", { class: "trilha" });

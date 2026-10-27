@@ -17,7 +17,7 @@ export async function iniciarFirebase(config) {
     import(BASE + "firebase-firestore.js"),
   ]);
   const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } = authMod;
-  const { getFirestore, doc, getDoc, setDoc } = fsMod;
+  const { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, query, orderBy, limit, getDocs, where, getCountFromServer, serverTimestamp } = fsMod;
 
   const app = initializeApp(config);
   const auth = getAuth(app);
@@ -57,6 +57,20 @@ export async function iniciarFirebase(config) {
       }
     },
     sair: () => signOut(auth),
+    /** Ranking público (só para quem entrou): ranking/{uid} com nome do personagem, nunca e-mail. */
+    ranking: {
+      async publicar(uid, dados) { await setDoc(doc(db, "ranking", uid), { ...dados, atualizadoEm: serverTimestamp() }); },
+      async remover(uid) { await deleteDoc(doc(db, "ranking", uid)); },
+      async top(n = 50) {
+        const snap = await getDocs(query(collection(db, "ranking"), orderBy("xp", "desc"), limit(n)));
+        return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+      },
+      async meu(uid) { const s = await getDoc(doc(db, "ranking", uid)); return s.exists() ? { uid, ...s.data() } : null; },
+      async posicao(xp) {
+        const c = await getCountFromServer(query(collection(db, "ranking"), where("xp", ">", xp)));
+        return c.data().count + 1;
+      },
+    },
     backend(u) {
       return {
         ref: adaptar(doc(db, "jogadores", u.uid)),

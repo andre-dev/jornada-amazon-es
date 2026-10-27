@@ -145,3 +145,7 @@ textarea.entrada { min-height: 90px; resize: vertical; }
 .confete-canvas { position: fixed; inset: 0; z-index: 120; pointer-events: none; }
 
 body[data-rota="licao"] .toasts, body[data-rota="chefe"] .toasts, body[data-rota="certificado"] .toasts, body[data-rota="onboarding"] .toasts { top: auto; bottom: calc(96px + env(safe-area-inset-bottom)); flex-direction: column-reverse; }
+
+/* Faixa "nova versão disponível" (app instalável) */
+.faixa-atualizar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 60; display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 18px; background: var(--card); color: var(--tinta); border: 3px solid var(--tinta); box-shadow: 0 6px 0 var(--tinta); max-width: calc(100vw - 32px); }
+@media (min-width: 900px) { .faixa-atualizar { bottom: 24px; } }

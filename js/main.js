@@ -17,6 +17,7 @@ import { conquistaPorId } from "./content/achievements.js";
 import { personagem } from "./art/characters.js";
 import { EVENTO_CONTA, definirAcoesConta } from "./ui/conta.js";
 import { FIREBASE_CONFIG } from "./config.js";
+import { iniciarPWA } from "./pwa.js";
 import { CHAVE_LOCAL } from "./state/schema.js";
 
 const app = document.getElementById("app");
@@ -57,9 +58,11 @@ const ROTAS = [
   { padrao: "/glossario", aba: "glossario", tela: () => import("./screens/glossary.js") },
   { padrao: "/perfil", aba: "perfil", tela: () => import("./screens/profile.js") },
   { padrao: "/fontes", aba: "perfil", tela: () => import("./screens/sources.js") },
+  { padrao: "/ranking", aba: "mapa", tela: () => import("./screens/ranking.js") },
 ];
 
 let hud, shell, nav, main, rodape, router, persist;
+let ranking = null; // { api, uid, sinc, entrar } quando há Firebase
 let tokenRota = 0;
 let telaAtual = null;
 
@@ -95,7 +98,7 @@ async function aoMudarRota({ rota, params, query, caminho }) {
   main.setAttribute("aria-busy", "true");
   try {
     const mod = await rota.tela();
-    const ctx = { store, router, ir: (c, o) => router.ir(c, o), params, query, toast, abrirTermo, persist, hud };
+    const ctx = { store, router, ir: (c, o) => router.ir(c, o), params, query, toast, abrirTermo, persist, hud, ranking };
     const no = await mod.default(ctx);
     if (meu !== tokenRota) { if (no && no.__destruir) no.__destruir(); return; }
     telaAtual = no;
@@ -218,6 +221,14 @@ async function boot() {
   });
   configurarEventos();
   const sincronizacao = persist.iniciar();
+  if (fb) {
+    ranking = { api: fb.ranking, uid: usuario ? usuario.uid : null, sinc: null, entrar: fb ? async () => { const { esquecerJogarSemConta } = await import("./ui/login.js"); esquecerJogarSemConta(); await fb.entrar(); location.reload(); } : null };
+    if (usuario) {
+      const { criarSincRanking } = await import("./nuvem/ranking.js");
+      // a primeira publicação espera a sincronização inicial, para não publicar um save vazio
+      ranking.sinc = criarSincRanking(store, fb.ranking, usuario.uid, sincronizacao);
+    }
+  }
   // Sem progresso neste navegador: espera a conta responder antes de decidir entre "continuar" e "criar personagem".
   const temConta = !!usuario || (!FIREBASE_CONFIG && typeof window.claude?.use === "function");
   if (!temProgressoLocal && temConta) {
@@ -237,4 +248,5 @@ function falhaBoot(e) {
   console.error(e);
   montar(app, h("div", { style: { padding: "24px", fontFamily: "system-ui", maxWidth: "520px", margin: "0 auto" } }, h("h1", null, "Ops, o jogo não abriu"), h("p", null, "Recarregue a página. Se o problema continuar, seu progresso continua salvo neste aparelho e no Backup do Perfil.")));
 }
+iniciarPWA();
 boot().catch(falhaBoot);

@@ -23,16 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Colocar a chave do Firebase (segredo do repositório)
+      - name: Preparar o site (chave do Firebase + modo offline)
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          VERSAO: ${{ github.sha }}
         run: |
           if [ -z "$FIREBASE_API_KEY" ]; then
             echo "::error::Falta o segredo FIREBASE_API_KEY em Settings > Secrets and variables > Actions"
             exit 1
           fi
-          sed -i "s|__FIREBASE_API_KEY__|${FIREBASE_API_KEY}|" js/config.js
-          rm -rf .github
+          bash tools/preparar-publicacao.sh .
 
       - uses: actions/configure-pages@v5
 

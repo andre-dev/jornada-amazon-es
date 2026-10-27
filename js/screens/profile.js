@@ -15,6 +15,7 @@ import { MISSOES } from "../content/checklist.js";
 import { montarBackup, nomeBackup, baixarArquivo, lerArquivoTexto, validarImportacao } from "../state/persistence.js";
 import { som } from "../ui/sons.js";
 import { cartaoConta } from "../ui/conta.js";
+import { cartaoInstalar } from "../ui/instalar.js";
 
 function interruptor(rotulo, dica, valor, aoMudar) {
   const t = h("input", { type: "checkbox", class: "toggle", checked: valor, role: "switch" });
@@ -119,8 +120,11 @@ export default function tela({ store, persist, ir }) {
     });
     if (raiz.__destruir) raiz.__destruir();
     const conta = cartaoConta({ store, persist });
-    raiz.__destruir = () => conta.__destruir();
-    raiz.append(conta, h("section", { class: "card pilha" }, h("h2", { style: { margin: 0 } }, "Backup em arquivo"),
+    const inst = cartaoInstalar();
+    raiz.append(h("a", { class: "card linha rk-cartao", href: "#/ranking", style: { justifyContent: "space-between", textDecoration: "none", color: "inherit" } },
+      h("span", null, h("strong", null, "🏆 Ranking"), h("br"), h("span", { class: "pequeno muted" }, "Veja sua posição entre os jogadores e escolha se quer aparecer.")), icone("seta", 22)));
+    raiz.__destruir = () => { conta.__destruir(); inst.__destruir(); };
+    raiz.append(conta, inst, h("section", { class: "card pilha" }, h("h2", { style: { margin: 0 } }, "Backup em arquivo"),
       h("p", { style: { margin: 0 } }, "Uma cópia extra do seu progresso num arquivo. Serve para guardar com você ou levar para outro navegador."),
       h("div", { class: "linha" },
         h("button", { class: "btn mar", type: "button", onclick: async () => { const r = await baixarArquivo(nomeBackup(), montarBackup(store.estado)); if (r.ok) toast("Backup pronto!", "ok"); else if (!r.cancelado) toast("Não consegui gerar o backup.", "erro"); } }, icone("download", 20), "Exportar backup"),
