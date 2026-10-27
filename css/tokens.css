@@ -1,0 +1,84 @@
+/* Tokens: paleta "Mediterrâneo de brinquedo" — contornos grossos e sombras duras, estilo adesivo de jogo */
+:root {
+  --sol: #FFC23C;
+  --sol-fundo: #FFE9AE;
+  --tomate: #FF5A4E;
+  --tomate-fundo: #FFD9D5;
+  --mar: #2EC4E6;
+  --mar-fundo: #CDF1F9;
+  --oliva: #5BBF6A;
+  --oliva-fundo: #D6F1D9;
+  --uva: #8B5CF6;
+  --uva-fundo: #E5DAFD;
+
+  --fundo: #FFF6E5;
+  --fundo-2: #FFEBC8;
+  --card: #FFFFFF;
+  --tinta: #22223B;
+  --tinta-2: #4A4A68;
+  --linha: #22223B;
+  --texto-sobre-cor: #22223B;
+  --link: #0A6F8A;
+  --ponto: rgba(34,34,59,.07);
+
+  --fonte-titulo: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --fonte-texto: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --borda: 3px;
+  --sombra: 0 4px 0 var(--linha);
+  --sombra-g: 0 6px 0 var(--linha);
+  --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 24px; --e6: 32px;
+  --nav-h: 68px;
+  --hud-h: 58px;
+  --lado: 16px;
+  --t-rapido: 150ms;
+  --t-medio: 300ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sol: #FFCB5C;
+    --sol-fundo: #4A3A12;
+    --tomate: #FF7468;
+    --tomate-fundo: #4F2420;
+    --mar: #4FD0EE;
+    --mar-fundo: #134452;
+    --oliva: #6FCF7E;
+    --oliva-fundo: #1E4526;
+    --uva: #A68BFA;
+    --uva-fundo: #33265E;
+    --fundo: #151526;
+    --fundo-2: #1C1C33;
+    --card: #22223B;
+    --tinta: #F5F1E8;
+    --tinta-2: #C9C5D8;
+    --linha: #0A0A14;
+    --texto-sobre-cor: #22223B;
+    --link: #6FDBF5;
+    --ponto: rgba(255,255,255,.05);
+  }
+}
+:root[data-theme="dark"] {
+  --sol: #FFCB5C;
+  --sol-fundo: #4A3A12;
+  --tomate: #FF7468;
+  --tomate-fundo: #4F2420;
+  --mar: #4FD0EE;
+  --mar-fundo: #134452;
+  --oliva: #6FCF7E;
+  --oliva-fundo: #1E4526;
+  --uva: #A68BFA;
+  --uva-fundo: #33265E;
+  --fundo: #151526;
+  --fundo-2: #1C1C33;
+  --card: #22223B;
+  --tinta: #F5F1E8;
+  --tinta-2: #C9C5D8;
+  --linha: #0A0A14;
+  --texto-sobre-cor: #22223B;
+  --link: #6FDBF5;
+  --ponto: rgba(255,255,255,.05);
+}

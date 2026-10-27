@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Jornada Amazon ES</title>
+  <meta name="description" content="Jogo educativo para aprender, do zero, a vender na Amazon Espanha e expandir pela Europa.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#FFF6E5">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FFC23C'/%3E%3Cpath d='M6 22 L12 10 L17 18 L21 13 L26 22Z' fill='%2322223B'/%3E%3Ccircle cx='23' cy='8' r='3' fill='%23FF5A4E'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,700&display=swap">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <script>
+    /* Aplica o tema salvo antes da primeira pintura (evita piscar). */
+    try {
+      var c = JSON.parse(localStorage.getItem("jornada-amazon-es:tema") || "null") || {};
+      if (c.tema === "light" || c.tema === "dark") document.documentElement.setAttribute("data-theme", c.tema);
+      if (c.reduzir) document.documentElement.setAttribute("data-anim", "off");
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="pular" href="#conteudo-principal">Pular para o conteúdo</a>
+  <div id="app"><p style="padding:24px;font-family:system-ui">Carregando a jornada…</p></div>
+  <noscript><p style="padding:24px">Este jogo precisa de JavaScript para funcionar.</p></noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
